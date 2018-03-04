@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/collection_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="2dp"
+    android:layout_marginEnd="-2dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/collection_card_art"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="-10dp"
+        android:layout_marginStart="-11dp"
+        tools:src="@drawable/placeholder_card_low"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:paddingStart="2dp"
+        android:paddingEnd="0dp">
+        <TextView
+            android:id="@+id/collection_card_name"
+            android:layout_width="88dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="0dp"
+            android:padding="4dp"
+            android:gravity="center"
+            android:fontFamily="sans-serif-condensed"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Dudu"/>
+    </LinearLayout>
+
+</LinearLayout>
