@@ -2,6 +2,7 @@ package com.robbcocco.gwenttracker.database.entity;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 
 /**
  * Created by rober on 2/27/2018.
@@ -9,6 +10,7 @@ import android.arch.persistence.room.ForeignKey;
 
 @Entity(tableName = "related_cards",
         primaryKeys = {"card_id", "related_card_id"},
+        indices = {@Index("card_id"), @Index("related_card_id")},
         foreignKeys = {
                 @ForeignKey(entity = CardModel.class,
                         parentColumns = "cardid",
