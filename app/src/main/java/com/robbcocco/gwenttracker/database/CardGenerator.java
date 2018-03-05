@@ -259,8 +259,10 @@ public class CardGenerator {
                         category_tag = categoryIds.getString(i);
                         category_id = mDb.categoryDao().getIdByTag(category_tag);
 
-                        CardCategoryModel cardCategoryModel = new CardCategoryModel(cardId, category_id);
-                        cardCategoryModels.add(cardCategoryModel);
+                        if (category_id > 0) {
+                            CardCategoryModel cardCategoryModel = new CardCategoryModel(cardId, category_id);
+                            cardCategoryModels.add(cardCategoryModel);
+                        }
                     }
 
                     JSONArray keywords = jsonObject.getJSONObject(key).getJSONArray("keywords");
@@ -272,8 +274,10 @@ public class CardGenerator {
                         keyword_tag = keywords.getString(i);
                         keyword_id = mDb.keywordDao().getIdByTag(keyword_tag);
 
-                        CardKeywordModel cardKeywordModel = new CardKeywordModel(cardId, keyword_id);
-                        cardKeywordModels.add(cardKeywordModel);
+                        if (keyword_id > 0) {
+                            CardKeywordModel cardKeywordModel = new CardKeywordModel(cardId, keyword_id);
+                            cardKeywordModels.add(cardKeywordModel);
+                        }
                     }
 
                     JSONArray loyalties = jsonObject.getJSONObject(key).getJSONArray("loyalties");
@@ -285,8 +289,10 @@ public class CardGenerator {
                         loyalty_name = loyalties.getString(i);
                         loyalty_id = mDb.loyaltyDao().getIdByName(loyalty_name);
 
-                        CardLoyaltyModel cardLoyaltyModel = new CardLoyaltyModel(cardId, loyalty_id);
-                        cardLoyaltyModels.add(cardLoyaltyModel);
+                        if (loyalty_id > 0) {
+                            CardLoyaltyModel cardLoyaltyModel = new CardLoyaltyModel(cardId, loyalty_id);
+                            cardLoyaltyModels.add(cardLoyaltyModel);
+                        }
                     }
 
                     JSONArray related = jsonObject.getJSONObject(key).getJSONArray("related");
@@ -298,8 +304,10 @@ public class CardGenerator {
                         related_tag = related.getString(i);
                         related_id = mDb.cardDao().getIdByTag(related_tag);
 
-                        RelatedCardModel relatedCardModel = new RelatedCardModel(cardId, related_id);
-                        relatedCardModels.add(relatedCardModel);
+                        if (related_id > 0) {
+                            RelatedCardModel relatedCardModel = new RelatedCardModel(cardId, related_id);
+                            relatedCardModels.add(relatedCardModel);
+                        }
                     }
                 }
             }

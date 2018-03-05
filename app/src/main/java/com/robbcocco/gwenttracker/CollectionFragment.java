@@ -11,11 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.robbcocco.gwenttracker.database.entity.CardInfoModel;
+import com.robbcocco.gwenttracker.database.pojo.CardInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -54,20 +55,24 @@ public class CollectionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.collection_list);
-        recyclerViewAdapter = new CollectionAdapter(new ArrayList<CardInfoModel>());
+        recyclerViewAdapter = new CollectionAdapter(new ArrayList<CardInfo>());
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
         recyclerView.setAdapter(recyclerViewAdapter);
 
         viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
 
-        viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardInfoModel>>() {
+        viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardInfo>>() {
             @Override
-            public void onChanged(@Nullable List<CardInfoModel> cardModelList) {
+            public void onChanged(@Nullable List<CardInfo> cardModelList) {
                 if (cardModelList != null) {
-                    Collections.sort(cardModelList, new Comparator<CardInfoModel>() {
+                    for(Iterator<CardInfo> iterator = cardModelList.iterator(); iterator.hasNext(); ) {
+                        if(!iterator.next().getVariationModelList().get(0).getCollectible())
+                            iterator.remove();
+                    }
+                    Collections.sort(cardModelList, new Comparator<CardInfo>() {
                         @Override
-                        public int compare(CardInfoModel c1, CardInfoModel c2) {
+                        public int compare(CardInfo c1, CardInfo c2) {
                             return c1.getCardModel().getName().get("en-US")
                                     .compareToIgnoreCase(c2.getCardModel().getName().get("en-US"));
                         }

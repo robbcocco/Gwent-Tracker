@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
-import com.robbcocco.gwenttracker.database.entity.CardInfoModel;
+import com.robbcocco.gwenttracker.database.pojo.CardInfo;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class CollectionViewModel extends AndroidViewModel {
     private CardDatabase mDb;
-    private final LiveData<List<CardInfoModel>> cardModelList;
+    private final LiveData<List<CardInfo>> cardModelList;
 
     public CollectionViewModel(Application application) {
         super(application);
@@ -25,7 +25,7 @@ public class CollectionViewModel extends AndroidViewModel {
         cardModelList = mDb.cardInfoDao().findAllCardInfo();
     }
 
-    public LiveData<List<CardInfoModel>> getCardModelList() {
+    public LiveData<List<CardInfo>> getCardModelList() {
         return cardModelList;
     }
 }

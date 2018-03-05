@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.robbcocco.gwenttracker.database.entity.CardInfoModel;
+import com.robbcocco.gwenttracker.database.pojo.CardInfo;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
 
 public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.RecyclerViewHolder> {
 
-    private List<CardInfoModel> cardModelList;
+    private List<CardInfo> cardModelList;
 
-    public CollectionAdapter(List<CardInfoModel> cardModelList) {
+    public CollectionAdapter(List<CardInfo> cardModelList) {
         setHasStableIds(true);
         this.cardModelList = cardModelList;
     }
@@ -34,17 +34,18 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
 
     @Override
     public void onBindViewHolder(final CollectionAdapter.RecyclerViewHolder holder, final int position) {
-        final CardInfoModel cardModel = cardModelList.get(position);
+        final CardInfo cardModel = cardModelList.get(position);
 
-        holder.cardArt.setImageBitmap(null);
-//        if (!cardModel.getVariationModels().isEmpty()) {
-        if (cardModel.getVariationModel().getArt_low() != null) {
-            GlideApp
-                    .with(holder.itemView)
-                    .load(cardModel.getVariationModel().getArt_low().toString())
-                    .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                    .placeholder(R.drawable.placeholder_card_low)
-                    .into(holder.cardArt);
+        holder.cardArt.setImageResource(R.drawable.placeholder_card_low);
+        if (!cardModel.getVariationModelList().isEmpty()) {
+            if (cardModel.getVariationModelList().get(0).getArt_low() != null) {
+                GlideApp
+                        .with(holder.itemView)
+                        .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
+                        .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
+                        .placeholder(R.drawable.placeholder_card_low)
+                        .into(holder.cardArt);
+            }
         }
 
         holder.cardName.setText(cardModel.getCardModel().getName().get("en-US"));
@@ -56,7 +57,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
         return cardModelList.size();
     }
 
-    public void updateCardModelList(List<CardInfoModel> cardModelList) {
+    public void updateCardModelList(List<CardInfo> cardModelList) {
         this.cardModelList = cardModelList;
         notifyDataSetChanged();
     }

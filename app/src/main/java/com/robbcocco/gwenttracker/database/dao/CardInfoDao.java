@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 
-import com.robbcocco.gwenttracker.database.entity.CardInfoModel;
+import com.robbcocco.gwenttracker.database.pojo.CardInfo;
 
 import java.util.List;
 
@@ -14,6 +14,6 @@ import java.util.List;
 
 @Dao
 public interface CardInfoDao {
-    @Query("SELECT * FROM cards JOIN variations ON cards.cardid = variations.card_id WHERE variations.collectible = 1")
-    LiveData<List<CardInfoModel>> findAllCardInfo();
+    @Query("SELECT * FROM cards JOIN factions ON cards.faction_id = factions.factionid")
+    LiveData<List<CardInfo>> findAllCardInfo();
 }
