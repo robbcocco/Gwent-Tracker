@@ -1,6 +1,7 @@
 package com.robbcocco.gwenttracker.database.pojo;
 
 import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Relation;
 
 import com.robbcocco.gwenttracker.database.entity.CardModel;
@@ -20,6 +21,7 @@ public class CardInfo {
     private FactionModel factionModel;
     @Relation(parentColumn = "cardid", entityColumn = "card_id")
     private List<VariationModel> variationModelList;
+
 //    @Relation(parentColumn = "category_id", entityColumn = "categoryid")
 //    private List<CategoryModel> categoryModelList;
 

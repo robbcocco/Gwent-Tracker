@@ -65,10 +65,14 @@ public class CollectionFragment extends Fragment {
         viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardInfo>>() {
             @Override
             public void onChanged(@Nullable List<CardInfo> cardModelList) {
-                if (cardModelList != null) {
-                    for(Iterator<CardInfo> iterator = cardModelList.iterator(); iterator.hasNext(); ) {
-                        if(!iterator.next().getVariationModelList().get(0).getCollectible())
-                            iterator.remove();
+                if (cardModelList != null & !cardModelList.isEmpty()) {
+                    for (int i=0; i<cardModelList.size(); i++) {
+                        if(cardModelList.get(i).getVariationModelList() != null &
+                                !cardModelList.get(i).getVariationModelList().isEmpty()) {
+                            if (!cardModelList.get(i).getVariationModelList().get(0).getCollectible()) {
+                                cardModelList.remove(i);
+                            }
+                        }
                     }
                     Collections.sort(cardModelList, new Comparator<CardInfo>() {
                         @Override

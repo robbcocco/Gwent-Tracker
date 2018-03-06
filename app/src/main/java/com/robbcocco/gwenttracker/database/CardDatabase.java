@@ -40,7 +40,7 @@ import com.robbcocco.gwenttracker.database.entity.VariationModel;
  * Created by rober on 2/23/2018.
  */
 
-@Database(version = 3, entities = {
+@Database(version = 4, entities = {
     CardCategoryModel.class, CardKeywordModel.class, CardLoyaltyModel.class, CardModel.class,
     CategoryModel.class, FactionModel.class, KeywordModel.class, LoyaltyModel.class,
     RarityModel.class, RelatedCardModel.class, SetModel.class, VariationModel.class
@@ -75,7 +75,10 @@ public abstract class CardDatabase extends RoomDatabase {
 
     @NonNull
     private static CardDatabase create(Context context) {
-        CardDatabase mDb = Room.databaseBuilder(context, CardDatabase.class, DB_NAME).addMigrations().fallbackToDestructiveMigration().build();
+        CardDatabase mDb = Room.databaseBuilder(context, CardDatabase.class, DB_NAME)
+                .addMigrations()
+                .fallbackToDestructiveMigration()
+                .build();
         new populateDatabaseAsyncTask(mDb).execute(context);
 
         return mDb;

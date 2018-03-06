@@ -44,6 +44,21 @@
             android:ellipsize="end"
             android:maxLines="1"
             tools:text="Dudu"/>
+        <TextView
+            android:id="@+id/collection_card_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="4dp"
+            android:gravity="start"
+            android:textSize="10sp"
+            android:fontFamily="sans-serif-condensed"
+            android:textStyle="normal"
+            android:ellipsize="end"
+            android:maxLines="2"
+            tools:text="Witcher, Relic, Spell, Special"/>
     </LinearLayout>
 
 </LinearLayout>
