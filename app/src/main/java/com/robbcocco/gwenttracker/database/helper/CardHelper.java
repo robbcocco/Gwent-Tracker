@@ -12,23 +12,23 @@ import com.robbcocco.gwenttracker.database.dao.CardDao;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
+import com.robbcocco.gwenttracker.database.entity.KeywordModel;
+import com.robbcocco.gwenttracker.database.entity.LoyaltyModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * Created by rober on 3/6/2018.
  */
 
 public class CardHelper {
-
     private CardDao cardDao;
+    private VariationHelper variationHelper;
 
-//    @Inject
     public CardHelper(CardDatabase cardDatabase) {
         cardDao = cardDatabase.cardDao();
+        variationHelper = new VariationHelper(cardDatabase);
     }
 
     public LiveData<CardModel> findCardById(int id) {
@@ -36,8 +36,10 @@ public class CardHelper {
         cardById = Transformations.switchMap(cardById, new Function<CardModel, LiveData<CardModel>>() {
             @Override
             public LiveData<CardModel> apply(final CardModel cardModel) {
-                LiveData<List<VariationModel>> variationModelList = cardDao.findVariationByCardId(cardModel.id);
-                LiveData<CardModel> cardModelLiveData = Transformations.map(variationModelList, new Function<List<VariationModel>, CardModel>() {
+                LiveData<CardModel> cardModelLiveData;
+                LiveData<List<VariationModel>> variationModelList = cardDao.findVariationsByCardId(cardModel.id);
+                // Set variations
+                cardModelLiveData = Transformations.map(variationModelList, new Function<List<VariationModel>, CardModel>() {
                     @Override
                     public CardModel apply(List<VariationModel> input) {
                         cardModel.setVariationModelList(input);
@@ -66,7 +68,7 @@ public class CardHelper {
                         }
                     });
                     // Set variations
-                    cardsMediatorLiveData.addSource(cardDao.findVariationByCardId(cardModel.id), new Observer<List<VariationModel>>() {
+                    cardsMediatorLiveData.addSource(variationHelper.findVariationsByCardId(cardModel.id), new Observer<List<VariationModel>>() {
                         @Override
                         public void onChanged(@Nullable List<VariationModel> modelList) {
                             cardModel.setVariationModelList(modelList);
@@ -81,23 +83,34 @@ public class CardHelper {
                             cardsMediatorLiveData.postValue(input);
                         }
                     });
+                    // Set keywords
+                    cardsMediatorLiveData.addSource(cardDao.getKeywordsByCardId(cardModel.id), new Observer<List<KeywordModel>>() {
+                        @Override
+                        public void onChanged(@Nullable List<KeywordModel> modelList) {
+                            cardModel.setKeywordModelList(modelList);
+                            cardsMediatorLiveData.postValue(input);
+                        }
+                    });
+                    // Set loyalties
+                    cardsMediatorLiveData.addSource(cardDao.getLoyaltiesByCardId(cardModel.id), new Observer<List<LoyaltyModel>>() {
+                        @Override
+                        public void onChanged(@Nullable List<LoyaltyModel> modelList) {
+                            cardModel.setLoyaltyModelList(modelList);
+                            cardsMediatorLiveData.postValue(input);
+                        }
+                    });
+                    // Set related cards
+                    cardsMediatorLiveData.addSource(cardDao.getRelatedCards(cardModel.id), new Observer<List<CardModel>>() {
+                        @Override
+                        public void onChanged(@Nullable List<CardModel> modelList) {
+                            cardModel.setRelatedCardModelList(modelList);
+                            cardsMediatorLiveData.postValue(input);
+                        }
+                    });
                 }
                 return cardsMediatorLiveData;
             }
         });
         return allCards;
     }
-//    public State getState(int id) {
-//        State state = cardDao.getState(id);
-//        state.setCities(cardDao.getCities(id));
-//        return state;
-//    }
-//
-//    public List<State> getStates() {
-//        List<State> states = cardDao.getStates();
-//        for (State state : states) {
-//            state.setCities(cardDao.getCities(state.getId()));
-//        }
-//        return states;
-//    }
 }

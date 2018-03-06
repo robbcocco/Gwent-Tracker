@@ -43,7 +43,7 @@ public interface CardDao {
     LiveData<FactionModel> findFactionById(int factionId);
 
     @Query("SELECT * FROM variations WHERE card_id = :cardId")
-    LiveData<List<VariationModel>> findVariationByCardId(int cardId);
+    LiveData<List<VariationModel>> findVariationsByCardId(int cardId);
 
     @Query("SELECT * FROM categories INNER JOIN card_categories ON categories.categoryid = card_categories.category_id WHERE card_categories.card_id = :cardId")
     LiveData<List<CategoryModel>> getCategoriesByCardId(int cardId);

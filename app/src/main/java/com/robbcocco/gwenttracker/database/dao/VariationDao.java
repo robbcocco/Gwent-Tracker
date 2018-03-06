@@ -6,6 +6,8 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
+import com.robbcocco.gwenttracker.database.entity.RarityModel;
+import com.robbcocco.gwenttracker.database.entity.SetModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
 
 import java.util.List;
@@ -29,5 +31,11 @@ public interface VariationDao {
     LiveData<VariationModel> findVariationById(int id);
 
     @Query("SELECT * FROM variations WHERE card_id = :cardId")
-    LiveData<List<VariationModel>> findVariationByCardId(int cardId);
+    LiveData<List<VariationModel>> findVariationsByCardId(int cardId);
+
+    @Query("SELECT * FROM rarities WHERE rarityid = :rarityId LIMIT 1")
+    LiveData<RarityModel> findRarityById(int rarityId);
+
+    @Query("SELECT * FROM sets WHERE setid = :setId LIMIT 1")
+    LiveData<SetModel> findSetById(int setId);
 }

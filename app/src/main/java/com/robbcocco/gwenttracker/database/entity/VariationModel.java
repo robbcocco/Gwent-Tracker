@@ -3,6 +3,7 @@ package com.robbcocco.gwenttracker.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
@@ -39,6 +40,11 @@ public class VariationModel {
     private Boolean collectible;
     private int rarity_id;
     private int set_id;
+
+    @Ignore
+    private RarityModel rarityModel;
+    @Ignore
+    private SetModel setModel;
 
     public VariationModel(String tag, int card_id, URL art_high, URL art_low,
                           URL art_medium, URL art_original, URL art_thumbnail,
@@ -133,5 +139,21 @@ public class VariationModel {
 
     public void setSet_id(int set_id) {
         this.set_id = set_id;
+    }
+
+    public RarityModel getRarityModel() {
+        return rarityModel;
+    }
+
+    public void setRarityModel(RarityModel rarityModel) {
+        this.rarityModel = rarityModel;
+    }
+
+    public SetModel getSetModel() {
+        return setModel;
+    }
+
+    public void setSetModel(SetModel setModel) {
+        this.setModel = setModel;
     }
 }
