@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.robbcocco.gwenttracker.database.pojo.CardInfo;
+import com.robbcocco.gwenttracker.database.entity.CardModel;
+import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
 
 public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.RecyclerViewHolder> {
 
-    private List<CardInfo> cardModelList;
+    private List<CardModel> cardModelList;
 
-    public CollectionAdapter(List<CardInfo> cardModelList) {
+    public CollectionAdapter(List<CardModel> cardModelList) {
         setHasStableIds(true);
         this.cardModelList = cardModelList;
     }
@@ -34,21 +35,35 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
 
     @Override
     public void onBindViewHolder(final CollectionAdapter.RecyclerViewHolder holder, final int position) {
-        final CardInfo cardModel = cardModelList.get(position);
+        final CardModel cardModel = cardModelList.get(position);
 
         holder.cardArt.setImageResource(R.drawable.placeholder_card_low);
-        if (!cardModel.getVariationModelList().isEmpty()) {
-            if (cardModel.getVariationModelList().get(0).getArt_low() != null) {
-                GlideApp
-                        .with(holder.itemView)
-                        .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
-                        .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .placeholder(R.drawable.placeholder_card_low)
-                        .into(holder.cardArt);
+        if (cardModel.getVariationModelList() != null) {
+            if (!cardModel.getVariationModelList().isEmpty()) {
+                if (cardModel.getVariationModelList().get(0).getArt_low() != null) {
+                    GlideApp.with(holder.itemView)
+                            .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
+                            .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
+                            .placeholder(R.drawable.placeholder_card_low)
+                            .into(holder.cardArt);
+                }
             }
         }
 
-        holder.cardName.setText(cardModel.getCardModel().getName().get("en-US"));
+        holder.cardName.setText(cardModel.getName().get("en-US"));
+        holder.cardName.setSelected(true);
+        if (cardModel.getCategoryModelList() != null) {
+            String categories = null;
+            for (CategoryModel categoryModel : cardModel.getCategoryModelList()) {
+                if (categories != null) {
+                    categories = categories + ", " + categoryModel.getName().get("en-US");
+                } else {
+                    categories = categoryModel.getName().get("en-US");
+                }
+            }
+            holder.cardCategories.setText(categories);
+            holder.cardCategories.setSelected(true);
+        }
         holder.itemView.setTag(cardModel);
     }
 
@@ -57,7 +72,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
         return cardModelList.size();
     }
 
-    public void updateCardModelList(List<CardInfo> cardModelList) {
+    public void updateCardModelList(List<CardModel> cardModelList) {
         this.cardModelList = cardModelList;
         notifyDataSetChanged();
     }
@@ -75,11 +90,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
     static class RecyclerViewHolder extends RecyclerView.ViewHolder {
         private ImageView cardArt;
         private TextView cardName;
+        private TextView cardCategories;
 
         RecyclerViewHolder(View view) {
             super(view);
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
+            cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
         }
     }
 }

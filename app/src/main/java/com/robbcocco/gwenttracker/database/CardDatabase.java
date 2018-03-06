@@ -12,7 +12,6 @@ import com.robbcocco.gwenttracker.database.converter.DictConverter;
 import com.robbcocco.gwenttracker.database.converter.URLConverter;
 import com.robbcocco.gwenttracker.database.dao.CardCategoryDao;
 import com.robbcocco.gwenttracker.database.dao.CardDao;
-import com.robbcocco.gwenttracker.database.dao.CardInfoDao;
 import com.robbcocco.gwenttracker.database.dao.CardKeywordDao;
 import com.robbcocco.gwenttracker.database.dao.CardLoyaltyDao;
 import com.robbcocco.gwenttracker.database.dao.CategoryDao;
@@ -53,7 +52,6 @@ public abstract class CardDatabase extends RoomDatabase {
 
     public abstract CardCategoryDao cardCategoryDao();
     public abstract CardDao cardDao();
-    public abstract CardInfoDao cardInfoDao();
     public abstract CardKeywordDao cardKeywordDao();
     public abstract CardLoyaltyDao cardLoyaltyDao();
     public abstract CategoryDao categoryDao();

@@ -3,9 +3,11 @@ package com.robbcocco.gwenttracker.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +36,19 @@ public class CardModel {
     private Map<String, String> info_raw;
     private int strength;
     private int faction_id;
+
+    @Ignore
+    private FactionModel factionModel;
+    @Ignore
+    private List<VariationModel> variationModelList;
+    @Ignore
+    private List<CategoryModel> categoryModelList;
+    @Ignore
+    private List<KeywordModel> keywordModelList;
+    @Ignore
+    private List<LoyaltyModel> loyaltyModelList;
+    @Ignore
+    private List<CardModel> relatedCardModelList;
 
     public CardModel(String tag, Map<String, String> name, Map<String, String> flavor,
                      Map<String, String> info, Map<String, String> info_raw, int strength,
@@ -101,5 +116,53 @@ public class CardModel {
 
     public void setFaction_id(int faction_id) {
         this.faction_id = faction_id;
+    }
+
+    public FactionModel getFactionModel() {
+        return factionModel;
+    }
+
+    public void setFactionModel(FactionModel factionModel) {
+        this.factionModel = factionModel;
+    }
+
+    public List<VariationModel> getVariationModelList() {
+        return variationModelList;
+    }
+
+    public void setVariationModelList(List<VariationModel> variationModelList) {
+        this.variationModelList = variationModelList;
+    }
+
+    public List<CategoryModel> getCategoryModelList() {
+        return categoryModelList;
+    }
+
+    public void setCategoryModelList(List<CategoryModel> categoryModelList) {
+        this.categoryModelList = categoryModelList;
+    }
+
+    public List<KeywordModel> getKeywordModelList() {
+        return keywordModelList;
+    }
+
+    public void setKeywordModelList(List<KeywordModel> keywordModelList) {
+        this.keywordModelList = keywordModelList;
+    }
+
+    public List<LoyaltyModel> getLoyaltyModelList() {
+        return loyaltyModelList;
+    }
+
+    public void setLoyaltyModelList(List<LoyaltyModel> loyaltyModelList) {
+        this.loyaltyModelList = loyaltyModelList;
+    }
+
+    public List<CardModel> getRelatedCardModelList() {
+        return relatedCardModelList;
+    }
+
+    public void setRelatedCardModelList(List<CardModel> relatedCardModelList) {
+        this.relatedCardModelList = relatedCardModelList;
     }
 }

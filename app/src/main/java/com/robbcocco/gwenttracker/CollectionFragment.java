@@ -11,12 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.robbcocco.gwenttracker.database.pojo.CardInfo;
+import com.robbcocco.gwenttracker.database.entity.CardModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -55,32 +54,35 @@ public class CollectionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.collection_list);
-        recyclerViewAdapter = new CollectionAdapter(new ArrayList<CardInfo>());
+        recyclerViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
         recyclerView.setAdapter(recyclerViewAdapter);
 
         viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
 
-        viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardInfo>>() {
+        viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
             @Override
-            public void onChanged(@Nullable List<CardInfo> cardModelList) {
-                if (cardModelList != null & !cardModelList.isEmpty()) {
-                    for (int i=0; i<cardModelList.size(); i++) {
-                        if(cardModelList.get(i).getVariationModelList() != null &
-                                !cardModelList.get(i).getVariationModelList().isEmpty()) {
-                            if (!cardModelList.get(i).getVariationModelList().get(0).getCollectible()) {
-                                cardModelList.remove(i);
+            public void onChanged(@Nullable List<CardModel> cardModelList) {
+                if (cardModelList != null) {
+                    if (!cardModelList.isEmpty()) {
+                        for (int i = 0; i < cardModelList.size(); i++) {
+                            if (cardModelList.get(i).getVariationModelList() != null) {
+                                if (!cardModelList.get(i).getVariationModelList().isEmpty()) {
+                                    if (!cardModelList.get(i).getVariationModelList().get(0).getCollectible()) {
+                                        cardModelList.remove(i);
+                                    }
+                                }
                             }
                         }
+                        Collections.sort(cardModelList, new Comparator<CardModel>() {
+                            @Override
+                            public int compare(CardModel c1, CardModel c2) {
+                                return c1.getName().get("en-US")
+                                        .compareToIgnoreCase(c2.getName().get("en-US"));
+                            }
+                        });
                     }
-                    Collections.sort(cardModelList, new Comparator<CardInfo>() {
-                        @Override
-                        public int compare(CardInfo c1, CardInfo c2) {
-                            return c1.getCardModel().getName().get("en-US")
-                                    .compareToIgnoreCase(c2.getCardModel().getName().get("en-US"));
-                        }
-                    });
                 }
                 recyclerViewAdapter.updateCardModelList(cardModelList);
             }
