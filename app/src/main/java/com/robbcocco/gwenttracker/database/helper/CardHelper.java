@@ -37,12 +37,51 @@ public class CardHelper {
             @Override
             public LiveData<CardModel> apply(final CardModel cardModel) {
                 LiveData<CardModel> cardModelLiveData;
-                LiveData<List<VariationModel>> variationModelList = cardDao.findVariationsByCardId(cardModel.id);
+                // Set faction
+                cardModelLiveData = Transformations.map(cardDao.findFactionById(cardModel.getFaction_id()), new Function<FactionModel, CardModel>() {
+                    @Override
+                    public CardModel apply(FactionModel input) {
+                        cardModel.setFactionModel(input);
+                        return cardModel;
+                    }
+                });
                 // Set variations
-                cardModelLiveData = Transformations.map(variationModelList, new Function<List<VariationModel>, CardModel>() {
+                cardModelLiveData = Transformations.map(variationHelper.findVariationsByCardId(cardModel.id), new Function<List<VariationModel>, CardModel>() {
                     @Override
                     public CardModel apply(List<VariationModel> input) {
                         cardModel.setVariationModelList(input);
+                        return cardModel;
+                    }
+                });
+                // Set categories
+                cardModelLiveData = Transformations.map(cardDao.getCategoriesByCardId(cardModel.id), new Function<List<CategoryModel>, CardModel>() {
+                    @Override
+                    public CardModel apply(List<CategoryModel> input) {
+                        cardModel.setCategoryModelList(input);
+                        return cardModel;
+                    }
+                });
+                // Set keywords
+                cardModelLiveData = Transformations.map(cardDao.getKeywordsByCardId(cardModel.id), new Function<List<KeywordModel>, CardModel>() {
+                    @Override
+                    public CardModel apply(List<KeywordModel> input) {
+                        cardModel.setKeywordModelList(input);
+                        return cardModel;
+                    }
+                });
+                // Set loyalties
+                cardModelLiveData = Transformations.map(cardDao.getLoyaltiesByCardId(cardModel.id), new Function<List<LoyaltyModel>, CardModel>() {
+                    @Override
+                    public CardModel apply(List<LoyaltyModel> input) {
+                        cardModel.setLoyaltyModelList(input);
+                        return cardModel;
+                    }
+                });
+                // Set related cards
+                cardModelLiveData = Transformations.map(cardDao.getRelatedCards(cardModel.id), new Function<List<CardModel>, CardModel>() {
+                    @Override
+                    public CardModel apply(List<CardModel> input) {
+                        cardModel.setRelatedCardModelList(input);
                         return cardModel;
                     }
                 });
