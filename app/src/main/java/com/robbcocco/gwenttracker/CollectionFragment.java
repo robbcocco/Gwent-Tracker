@@ -2,6 +2,7 @@ package com.robbcocco.gwenttracker;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -70,15 +71,6 @@ public class CollectionFragment extends Fragment {
         viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
             @Override
             public void onChanged(@Nullable List<CardModel> cardModelList) {
-                if (cardModelList != null && !cardModelList.isEmpty()) {
-                    Collections.sort(cardModelList, new Comparator<CardModel>() {
-                        @Override
-                        public int compare(CardModel c1, CardModel c2) {
-                            return c1.getName().get("en-US")
-                                    .compareToIgnoreCase(c2.getName().get("en-US"));
-                        }
-                    });
-                }
                 recyclerViewAdapter.updateCardModelList(cardModelList);
             }
         });
@@ -160,7 +152,9 @@ public class CollectionFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(itemView.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+            Intent intent = CardDetailActivity.newIntent(getActivity(), getAdapterPosition());
+            startActivity(intent);
+//            Toast.makeText(itemView.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -16,6 +16,8 @@ import com.robbcocco.gwenttracker.database.entity.KeywordModel;
 import com.robbcocco.gwenttracker.database.entity.LoyaltyModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -96,6 +98,16 @@ public class CardHelper {
         allCards = Transformations.switchMap(allCards, new Function<List<CardModel>, LiveData<List<CardModel>>>() {
             @Override
             public LiveData<List<CardModel>> apply(final List<CardModel> input) {
+                // Reorder list
+                if (input != null && !input.isEmpty()) {
+                    Collections.sort(input, new Comparator<CardModel>() {
+                        @Override
+                        public int compare(CardModel c1, CardModel c2) {
+                            return c1.getName().get("en-US")
+                                    .compareToIgnoreCase(c2.getName().get("en-US"));
+                        }
+                    });
+                }
                 final MediatorLiveData<List<CardModel>> cardsMediatorLiveData = new MediatorLiveData<>();
                 for (final CardModel cardModel : input) {
                     // Set faction
