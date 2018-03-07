@@ -1,18 +1,24 @@
 package com.robbcocco.gwenttracker;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.robbcocco.gwenttracker.database.entity.CardModel;
+import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 
 import java.util.List;
+
+import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
 
 
 /**
@@ -29,7 +35,15 @@ public class CardDetailFragment extends Fragment {
     private CollectionViewModel viewModel;
 
     private CardModel cardModel;
-    private TextView test;
+    private CollapsingToolbarLayout collapsingToolbar;
+    private Toolbar toolbar;
+    private ImageView artView;
+    private TextView factionView;
+    private TextView rarityView;
+    private TextView setView;
+    private TextView categoriesView;
+    private TextView flavorView;
+    private TextView infoView;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -56,7 +70,8 @@ public class CardDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
+//            viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
+            viewModel = CollectionViewModel.getInstance(this);
 
             viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
                 @Override
@@ -76,16 +91,44 @@ public class CardDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_card_detail, container, false);
-        test = (TextView) view.findViewById(R.id.just_a_test);
-        if (cardModel != null) {
-            test.setText(cardModel.getName().get("en-US"));
+
+        toolbar = (Toolbar) view.findViewById(R.id.card_detail_toolbar);
+        collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.card_detail_collapsingtoolbar);
+
+        artView = (ImageView) view.findViewById(R.id.card_detail_art);
+        factionView = (TextView) view.findViewById(R.id.card_detail_faction);
+        rarityView = (TextView) view.findViewById(R.id.card_detail_rarity);
+        setView = (TextView) view.findViewById(R.id.card_detail_set);
+        categoriesView = (TextView) view.findViewById(R.id.card_detail_categories);
+        flavorView = (TextView) view.findViewById(R.id.card_detail_flavor);
+        infoView = (TextView) view.findViewById(R.id.card_detail_info);
+
+        if (toolbar != null) {
+            ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         }
+
+        updateView();
+
         return view;
     }
 
     private void updateView() {
         if (cardModel != null) {
-            test.setText(cardModel.getName().get("en-US"));
+            collapsingToolbar.setTitle(cardModel.getName().get("en-US"));
+
+            GlideApp.with(getActivity())
+                    .load(cardModel.getVariationModelList().get(0).getArt_medium().toString())
+                    .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
+                    .placeholder(R.drawable.placeholder_card_low)
+                    .into(artView);
+            factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
+            rarityView.setText(cardModel.getVariationModelList().get(0).getRarityModel().getName());
+            setView.setText(cardModel.getVariationModelList().get(0).getSetModel().getName());
+
+            categoriesView.setText(cardModel.getCategories("en-US"));
+
+            flavorView.setText(cardModel.getFlavor().get("en-US"));
+            infoView.setText(cardModel.getInfo().get("en-US"));
         }
     }
 

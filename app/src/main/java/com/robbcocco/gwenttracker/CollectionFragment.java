@@ -66,7 +66,8 @@ public class CollectionFragment extends Fragment {
 
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
+//        viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
+        viewModel = CollectionViewModel.getInstance(this);
 
         viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
             @Override
@@ -110,18 +111,10 @@ public class CollectionFragment extends Fragment {
 
             holder.cardName.setText(cardModel.getName().get("en-US"));
             holder.cardName.setSelected(true);
-            if (cardModel.getCategoryModelList() != null) {
-                String categories = null;
-                for (CategoryModel categoryModel : cardModel.getCategoryModelList()) {
-                    if (categories != null) {
-                        categories = categories + ", " + categoryModel.getName().get("en-US");
-                    } else {
-                        categories = categoryModel.getName().get("en-US");
-                    }
-                }
-                holder.cardCategories.setText(categories);
-                holder.cardCategories.setSelected(true);
-            }
+
+            holder.cardCategories.setText(cardModel.getCategories("en-US"));
+            holder.cardCategories.setSelected(true);
+
             holder.itemView.setTag(cardModel);
         }
 

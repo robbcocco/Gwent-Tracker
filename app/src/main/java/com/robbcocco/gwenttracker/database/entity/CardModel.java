@@ -138,6 +138,21 @@ public class CardModel {
         return categoryModelList;
     }
 
+    public String getCategories(String lang) {
+        if (this.getCategoryModelList() != null) {
+            String categories = null;
+            for (CategoryModel categoryModel : this.getCategoryModelList()) {
+                if (categories != null) {
+                    categories = categories + ", " + categoryModel.getName().get(lang);
+                } else {
+                    categories = categoryModel.getName().get(lang);
+                }
+            }
+            return categories;
+        }
+        return "";
+    }
+
     public void setCategoryModelList(List<CategoryModel> categoryModelList) {
         this.categoryModelList = categoryModelList;
     }

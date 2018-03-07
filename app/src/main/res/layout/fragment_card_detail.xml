@@ -1,14 +1,155 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.robbcocco.gwenttracker.CardDetailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/just_a_test"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-</FrameLayout>
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/card_detail_collapsingtoolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:expandedTitleMarginBottom="16dp"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="-20dp"
+                android:paddingBottom="30dp"
+                android:orientation="horizontal"
+                app:layout_collapseMode="parallax">
+                <ImageView
+                    android:id="@+id/card_detail_art"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/placeholder_card_medium" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/card_detail_faction"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:gravity="start"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif"
+                        android:textStyle="bold"
+                        tools:text="Neutral" />
+                    <TextView
+                        android:id="@+id/card_detail_rarity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:gravity="start"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif"
+                        android:textStyle="bold"
+                        tools:text="Rare" />
+                    <TextView
+                        android:id="@+id/card_detail_set"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:gravity="start"
+                        android:textSize="20sp"
+                        android:fontFamily="sans-serif"
+                        android:textStyle="bold"
+                        tools:text="BaseSet" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/card_detail_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_alignParentTop="true"
+                android:elevation="6dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:layout_collapseMode="pin" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+        <TextView
+            android:id="@+id/card_detail_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            tools:text="Relict" />
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="12dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="0dp"
+            android:gravity="start"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textStyle="bold"
+            android:text="@string/card_flavor" />
+        <TextView
+            android:id="@+id/card_detail_flavor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            tools:text="Dudu" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="12dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="0dp"
+            android:gravity="start"
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textStyle="bold"
+            android:text="@string/card_info" />
+        <TextView
+            android:id="@+id/card_detail_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            tools:text="Dudu" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
