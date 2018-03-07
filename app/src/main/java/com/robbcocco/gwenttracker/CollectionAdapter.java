@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
@@ -87,16 +88,22 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
         return position;
     }
 
-    static class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    static class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView cardArt;
         private TextView cardName;
         private TextView cardCategories;
 
         RecyclerViewHolder(View view) {
             super(view);
+            itemView.setOnClickListener(this);
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
             cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(itemView.getContext(), String.valueOf(getItemId()), Toast.LENGTH_SHORT).show();
         }
     }
 }

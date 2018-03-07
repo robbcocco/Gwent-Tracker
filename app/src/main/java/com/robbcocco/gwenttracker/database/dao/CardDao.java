@@ -33,14 +33,14 @@ public interface CardDao {
     @Query("SELECT * FROM cards")
     List<CardModel> testDB();
 
-    @Query("SELECT * FROM cards")
-    LiveData<List<CardModel>> loadAllCards();
-
     @Query("SELECT * FROM cards WHERE cardid = :id LIMIT 1")
     LiveData<CardModel> findCardById(int id);
 
     @Query("SELECT * FROM factions WHERE factionid = :factionId LIMIT 1")
     LiveData<FactionModel> findFactionById(int factionId);
+
+    @Query("SELECT DISTINCT cards.* FROM cards INNER JOIN variations ON cards.cardid = variations.card_id WHERE variations.collectible = 1")
+    LiveData<List<CardModel>> loadAllCards();
 
     @Query("SELECT * FROM variations WHERE card_id = :cardId")
     LiveData<List<VariationModel>> findVariationsByCardId(int cardId);
