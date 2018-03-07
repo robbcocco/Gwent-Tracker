@@ -64,25 +64,14 @@ public class CollectionFragment extends Fragment {
         viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
             @Override
             public void onChanged(@Nullable List<CardModel> cardModelList) {
-                if (cardModelList != null) {
-                    if (!cardModelList.isEmpty()) {
-//                        for (int i = 0; i < cardModelList.size(); i++) {
-//                            if (cardModelList.get(i).getVariationModelList() != null) {
-//                                if (!cardModelList.get(i).getVariationModelList().isEmpty()) {
-//                                    if (!cardModelList.get(i).getVariationModelList().get(0).getCollectible()) {
-//                                        cardModelList.remove(i);
-//                                    }
-//                                }
-//                            }
-//                        }
-                        Collections.sort(cardModelList, new Comparator<CardModel>() {
-                            @Override
-                            public int compare(CardModel c1, CardModel c2) {
-                                return c1.getName().get("en-US")
-                                        .compareToIgnoreCase(c2.getName().get("en-US"));
-                            }
-                        });
-                    }
+                if (cardModelList != null && !cardModelList.isEmpty()) {
+                    Collections.sort(cardModelList, new Comparator<CardModel>() {
+                        @Override
+                        public int compare(CardModel c1, CardModel c2) {
+                            return c1.getName().get("en-US")
+                                    .compareToIgnoreCase(c2.getName().get("en-US"));
+                        }
+                    });
                 }
                 recyclerViewAdapter.updateCardModelList(cardModelList);
             }

@@ -24,7 +24,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
     private List<CardModel> cardModelList;
 
     public CollectionAdapter(List<CardModel> cardModelList) {
-        setHasStableIds(true);
         this.cardModelList = cardModelList;
     }
 
@@ -39,16 +38,14 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
         final CardModel cardModel = cardModelList.get(position);
 
         holder.cardArt.setImageResource(R.drawable.placeholder_card_low);
-        if (cardModel.getVariationModelList() != null) {
-            if (!cardModel.getVariationModelList().isEmpty()) {
-                if (cardModel.getVariationModelList().get(0).getArt_low() != null) {
-                    GlideApp.with(holder.itemView)
-                            .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
-                            .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                            .placeholder(R.drawable.placeholder_card_low)
-                            .into(holder.cardArt);
-                }
-            }
+        if (cardModel.getVariationModelList() != null &&
+                !cardModel.getVariationModelList().isEmpty() &&
+                cardModel.getVariationModelList().get(0).getArt_low() != null) {
+            GlideApp.with(holder.itemView)
+                    .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
+                    .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
+                    .placeholder(R.drawable.placeholder_card_low)
+                    .into(holder.cardArt);
         }
 
         holder.cardName.setText(cardModel.getName().get("en-US"));
@@ -78,16 +75,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
         notifyDataSetChanged();
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
     static class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView cardArt;
         private TextView cardName;
@@ -103,7 +90,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Re
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(itemView.getContext(), String.valueOf(getItemId()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(itemView.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
         }
     }
 }
