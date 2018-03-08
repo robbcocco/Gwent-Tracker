@@ -17,4 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
 
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:textColor">#D2D2D2</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
 </resources>

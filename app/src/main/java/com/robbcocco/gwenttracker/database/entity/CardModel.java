@@ -161,6 +161,23 @@ public class CardModel {
         return keywordModelList;
     }
 
+    public String getKeywords(String lang) {
+        if (this.getKeywordModelList() != null) {
+            String keywords = null;
+            String keyword = null;
+            for (KeywordModel keywordModel : this.getKeywordModelList()) {
+                keyword = keywordModel.getInfo().get(lang);
+                if (keywords != null) {
+                    keywords = keywords + "\n\n" + keyword;
+                } else {
+                    keywords = keyword;
+                }
+            }
+            return keywords;
+        }
+        return "";
+    }
+
     public void setKeywordModelList(List<KeywordModel> keywordModelList) {
         this.keywordModelList = keywordModelList;
     }

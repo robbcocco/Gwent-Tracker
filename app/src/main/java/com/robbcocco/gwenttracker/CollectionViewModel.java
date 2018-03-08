@@ -19,24 +19,11 @@ import java.util.List;
  */
 
 public class CollectionViewModel extends AndroidViewModel {
-    private static CollectionViewModel INSTANCE=null;
+    private CollectionViewModel INSTANCE=null;
 
     private CardDatabase mDb;
     private CardHelper cardHelper;
     private final LiveData<List<CardModel>> cardModelList;
-
-    public static CollectionViewModel getInstance(FragmentActivity test) {
-        if (INSTANCE==null) {
-            INSTANCE=ViewModelProviders.of(test).get(CollectionViewModel.class);
-        }
-        return(INSTANCE);
-    }
-    public static CollectionViewModel getInstance(Fragment test) {
-        if (INSTANCE==null) {
-            INSTANCE=ViewModelProviders.of(test).get(CollectionViewModel.class);
-        }
-        return(INSTANCE);
-    }
 
     public CollectionViewModel(Application application) {
         super(application);

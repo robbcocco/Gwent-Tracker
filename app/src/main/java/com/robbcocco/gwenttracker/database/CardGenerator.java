@@ -81,9 +81,9 @@ public class CardGenerator {
                 Iterator<String> keywordLangs = keyword.keys();
                 while (keywordLangs.hasNext()) {
                     String keyLang = keywordLangs.next();
-                    name.put(keyLang, keyword.getString(keyLang).split(":")[0]);
-                    text.put(keyLang, keyword.getString(keyLang));
-                    raw.put(keyLang, keyword.getString(keyLang));
+                    name.put(keyLang, keyword.getJSONObject(keyLang).getString("text").split(":")[0]);
+                    text.put(keyLang, keyword.getJSONObject(keyLang).getString("text"));
+                    raw.put(keyLang, keyword.getJSONObject(keyLang).getString("raw"));
                 }
 
                 KeywordModel keywordModel = new KeywordModel(key, name, text, raw);

@@ -2,6 +2,7 @@ package com.robbcocco.gwenttracker;
 
 import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,8 +55,7 @@ public class CollectionFragment extends Fragment {
 
         recyclerView.setAdapter(recyclerViewAdapter);
 
-//        viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
-        viewModel = CollectionViewModel.getInstance(this);
+        viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
 
         viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
             @Override

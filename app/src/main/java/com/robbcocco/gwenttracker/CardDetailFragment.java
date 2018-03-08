@@ -4,11 +4,17 @@ import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -148,13 +154,25 @@ public class CardDetailFragment extends Fragment {
                 factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
                 int factionArtId;
                 switch (cardModel.getFactionModel().getTag()) {
-                    case "Monster": factionArtId = R.drawable.monsters; break;
-                    case "Nilfgaard": factionArtId = R.drawable.nilfgaard; break;
-                    case "Northern Realms": factionArtId = R.drawable.northernrealms; break;
-                    case "Scoiatael": factionArtId = R.drawable.scoiatael; break;
-                    case "Skellige": factionArtId = R.drawable.skellige; break;
+                    case "Monster":
+                        factionArtId = R.drawable.monsters;
+                        break;
+                    case "Nilfgaard":
+                        factionArtId = R.drawable.nilfgaard;
+                        break;
+                    case "Northern Realms":
+                        factionArtId = R.drawable.northernrealms;
+                        break;
+                    case "Scoiatael":
+                        factionArtId = R.drawable.scoiatael;
+                        break;
+                    case "Skellige":
+                        factionArtId = R.drawable.skellige;
+                        break;
                     case "Neutral":
-                    default: factionArtId = R.drawable.neutral; break;
+                    default:
+                        factionArtId = R.drawable.neutral;
+                        break;
                 }
                 factionArtView.setImageResource(factionArtId);
 
@@ -165,7 +183,21 @@ public class CardDetailFragment extends Fragment {
             categoriesView.setText(cardModel.getCategories("en-US"));
 
             flavorView.setText(cardModel.getFlavor().get("en-US"));
+
             infoView.setText(cardModel.getInfo().get("en-US"));
+            if (!cardModel.getKeywordModelList().isEmpty()) {
+                infoView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog
+                                .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setMessage(cardModel.getKeywords("en-US"))
+                                .setTitle("Keywords");
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
+            }
 
             if (cardModel.getRelatedCardModelList() != null && !cardModel.getRelatedCardModelList().isEmpty()) {
                 recyclerViewAdapter.updateRelatedList(cardModel.getRelatedCardModelList());
