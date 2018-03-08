@@ -25,12 +25,6 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 
 public class CollectionFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
     private CollectionViewModel viewModel;
 
     private CollectionAdapter recyclerViewAdapter;
@@ -45,9 +39,6 @@ public class CollectionFragment extends Fragment {
      */
     public static CollectionFragment newInstance() {
         CollectionFragment fragment = new CollectionFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -87,7 +78,7 @@ public class CollectionFragment extends Fragment {
         @Override
         public CollectionFragment.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new CollectionFragment.RecyclerViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.collection_card, parent, false));
+                    .inflate(R.layout.collection_card, parent, false), cardModelList);
         }
 
         @Override
@@ -127,13 +118,17 @@ public class CollectionFragment extends Fragment {
 
 
     private class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private int cardId;
+        private List<CardModel> cardModelList;
         private ImageView cardArt;
         private TextView cardName;
         private TextView cardCategories;
 
-        RecyclerViewHolder(View view) {
+        RecyclerViewHolder(View view, List<CardModel> cardModelList) {
             super(view);
             itemView.setOnClickListener(this);
+
+            this.cardModelList = cardModelList;
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
             cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
@@ -141,7 +136,8 @@ public class CollectionFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = CardDetailActivity.newIntent(getActivity(), getAdapterPosition());
+            cardId = cardModelList.get(getAdapterPosition()).id;
+            Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
             startActivity(intent);
         }
     }

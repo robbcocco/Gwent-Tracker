@@ -38,56 +38,56 @@ public class CardHelper {
         cardById = Transformations.switchMap(cardById, new Function<CardModel, LiveData<CardModel>>() {
             @Override
             public LiveData<CardModel> apply(final CardModel cardModel) {
-                LiveData<CardModel> cardModelLiveData;
+                final MediatorLiveData<CardModel> cardsMediatorLiveData = new MediatorLiveData<>();
                 // Set faction
-                cardModelLiveData = Transformations.map(cardDao.findFactionById(cardModel.getFaction_id()), new Function<FactionModel, CardModel>() {
+                cardsMediatorLiveData.addSource(cardDao.findFactionById(cardModel.getFaction_id()), new Observer<FactionModel>() {
                     @Override
-                    public CardModel apply(FactionModel input) {
-                        cardModel.setFactionModel(input);
-                        return cardModel;
+                    public void onChanged(@Nullable FactionModel model) {
+                        cardModel.setFactionModel(model);
+                        cardsMediatorLiveData.postValue(cardModel);
                     }
                 });
                 // Set variations
-                cardModelLiveData = Transformations.map(variationHelper.findVariationsByCardId(cardModel.id), new Function<List<VariationModel>, CardModel>() {
+                cardsMediatorLiveData.addSource(variationHelper.findVariationsByCardId(cardModel.id), new Observer<List<VariationModel>>() {
                     @Override
-                    public CardModel apply(List<VariationModel> input) {
-                        cardModel.setVariationModelList(input);
-                        return cardModel;
+                    public void onChanged(@Nullable List<VariationModel> modelList) {
+                        cardModel.setVariationModelList(modelList);
+                        cardsMediatorLiveData.postValue(cardModel);
                     }
                 });
                 // Set categories
-                cardModelLiveData = Transformations.map(cardDao.getCategoriesByCardId(cardModel.id), new Function<List<CategoryModel>, CardModel>() {
+                cardsMediatorLiveData.addSource(cardDao.getCategoriesByCardId(cardModel.id), new Observer<List<CategoryModel>>() {
                     @Override
-                    public CardModel apply(List<CategoryModel> input) {
-                        cardModel.setCategoryModelList(input);
-                        return cardModel;
+                    public void onChanged(@Nullable List<CategoryModel> modelList) {
+                        cardModel.setCategoryModelList(modelList);
+                        cardsMediatorLiveData.postValue(cardModel);
                     }
                 });
                 // Set keywords
-                cardModelLiveData = Transformations.map(cardDao.getKeywordsByCardId(cardModel.id), new Function<List<KeywordModel>, CardModel>() {
+                cardsMediatorLiveData.addSource(cardDao.getKeywordsByCardId(cardModel.id), new Observer<List<KeywordModel>>() {
                     @Override
-                    public CardModel apply(List<KeywordModel> input) {
-                        cardModel.setKeywordModelList(input);
-                        return cardModel;
+                    public void onChanged(@Nullable List<KeywordModel> modelList) {
+                        cardModel.setKeywordModelList(modelList);
+                        cardsMediatorLiveData.postValue(cardModel);
                     }
                 });
                 // Set loyalties
-                cardModelLiveData = Transformations.map(cardDao.getLoyaltiesByCardId(cardModel.id), new Function<List<LoyaltyModel>, CardModel>() {
+                cardsMediatorLiveData.addSource(cardDao.getLoyaltiesByCardId(cardModel.id), new Observer<List<LoyaltyModel>>() {
                     @Override
-                    public CardModel apply(List<LoyaltyModel> input) {
-                        cardModel.setLoyaltyModelList(input);
-                        return cardModel;
+                    public void onChanged(@Nullable List<LoyaltyModel> modelList) {
+                        cardModel.setLoyaltyModelList(modelList);
+                        cardsMediatorLiveData.postValue(cardModel);
                     }
                 });
                 // Set related cards
-                cardModelLiveData = Transformations.map(cardDao.getRelatedCards(cardModel.id), new Function<List<CardModel>, CardModel>() {
+                cardsMediatorLiveData.addSource(cardDao.getRelatedCards(cardModel.id), new Observer<List<CardModel>>() {
                     @Override
-                    public CardModel apply(List<CardModel> input) {
-                        cardModel.setRelatedCardModelList(input);
-                        return cardModel;
+                    public void onChanged(@Nullable List<CardModel> modelList) {
+                        cardModel.setRelatedCardModelList(modelList);
+                        cardsMediatorLiveData.postValue(cardModel);
                     }
                 });
-                return cardModelLiveData;
+                return cardsMediatorLiveData;
             }
         });
         return cardById;

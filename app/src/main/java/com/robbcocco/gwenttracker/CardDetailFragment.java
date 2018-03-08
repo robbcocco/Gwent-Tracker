@@ -1,6 +1,7 @@
 package com.robbcocco.gwenttracker;
 
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,11 +35,9 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 public class CardDetailFragment extends Fragment {
     private static final String CARD_ID = "card_id";
-    private static final String RELATED_ID = "related_id";
 
-    private CollectionViewModel viewModel;
+    private CardDetailViewModelFactory.CardDetailViewModel viewModel;
 
-    private CardModel parentCard;
     private CardModel cardModel;
     private CollapsingToolbarLayout collapsingToolbar;
     private Toolbar toolbar;
@@ -71,22 +70,6 @@ public class CardDetailFragment extends Fragment {
         CardDetailFragment fragment = new CardDetailFragment();
         Bundle args = new Bundle();
         args.putInt(CARD_ID, cardId);
-        args.putInt(RELATED_ID, -1);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param cardId Parameter 1.
-     * @return A new instance of fragment CardDetailFragment.
-     */
-    public static CardDetailFragment newInstance(Integer cardId, Integer relatedId) {
-        CardDetailFragment fragment = new CardDetailFragment();
-        Bundle args = new Bundle();
-        args.putInt(CARD_ID, cardId);
-        args.putInt(RELATED_ID, relatedId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -95,27 +78,17 @@ public class CardDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
-            viewModel = CollectionViewModel.getInstance(this);
+            int cardId = getArguments().getInt(CARD_ID);
+            viewModel = ViewModelProviders
+                    .of(this,
+                            new CardDetailViewModelFactory(getActivity().getApplication(), cardId))
+                    .get(CardDetailViewModelFactory.CardDetailViewModel.class);
 
-            viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
+            viewModel.getCardModel().observe(getActivity(), new Observer<CardModel>() {
                 @Override
-                public void onChanged(@Nullable List<CardModel> cardModelList) {
-                    Integer cardId = getArguments().getInt(CARD_ID);
-                    if (cardModelList != null && !cardModelList.isEmpty() && cardModelList.get(cardId) != null) {
-                        Integer relatedId = getArguments().getInt(RELATED_ID);
-                        if (relatedId >= 0 &&
-                                cardModelList.get(cardId).getRelatedCardModelList() != null &&
-                                !cardModelList.get(cardId).getRelatedCardModelList().isEmpty() &&
-                                cardModelList.get(cardId).getRelatedCardModelList().get(relatedId) != null) {
-                            cardModel = cardModelList.get(cardId).getRelatedCardModelList().get(relatedId);
-                            parentCard = cardModelList.get(cardId);
-                        } else {
-                            cardModel = cardModelList.get(cardId);
-                            parentCard = null;
-                        }
-                        updateView();
-                    }
+                public void onChanged(@Nullable CardModel model) {
+                    cardModel = model;
+                    updateView();
                 }
             });
         }
@@ -163,15 +136,6 @@ public class CardDetailFragment extends Fragment {
                     cardModel.getVariationModelList().get(0).getArt_medium() != null) {
                 GlideApp.with(getActivity())
                         .load(cardModel.getVariationModelList().get(0).getArt_medium().toString())
-                        .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .placeholder(R.drawable.placeholder_card_low)
-                        .into(artView);
-            }
-            else if (parentCard != null && parentCard.getVariationModelList() != null &&
-                    !parentCard.getVariationModelList().isEmpty() &&
-                    parentCard.getVariationModelList().get(0).getArt_medium() != null) {
-                GlideApp.with(getActivity())
-                        .load(parentCard.getVariationModelList().get(0).getArt_medium().toString())
                         .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
                         .placeholder(R.drawable.placeholder_card_low)
                         .into(artView);
@@ -247,26 +211,17 @@ public class CardDetailFragment extends Fragment {
         @Override
         public CardDetailFragment.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new CardDetailFragment.RecyclerViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.collection_card, parent, false));
+                    .inflate(R.layout.collection_card, parent, false), cardModelList);
         }
 
         @Override
         public void onBindViewHolder(final CardDetailFragment.RecyclerViewHolder holder, final int position) {
-            final CardModel cardModelRV = cardModelList.get(position);
+            final CardModel cardModel = cardModelList.get(position);
 
             holder.cardArt.setImageResource(R.drawable.placeholder_card_low);
-            if (cardModelRV.getVariationModelList() != null &&
-                    !cardModelRV.getVariationModelList().isEmpty() &&
-                    cardModelRV.getVariationModelList().get(0).getArt_low() != null) {
-                GlideApp.with(holder.itemView)
-                        .load(cardModelRV.getVariationModelList().get(0).getArt_low().toString())
-                        .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .placeholder(R.drawable.placeholder_card_low)
-                        .into(holder.cardArt);
-            }
-            else if (cardModel.getVariationModelList() != null &&
+            if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
-                    cardModel.getVariationModelList().get(0).getArt_medium() != null) {
+                    cardModel.getVariationModelList().get(0).getArt_low() != null) {
                 GlideApp.with(holder.itemView)
                         .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
                         .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
@@ -274,13 +229,13 @@ public class CardDetailFragment extends Fragment {
                         .into(holder.cardArt);
             }
 
-            holder.cardName.setText(cardModelRV.getName().get("en-US"));
+            holder.cardName.setText(cardModel.getName().get("en-US"));
             holder.cardName.setSelected(true);
 
-            holder.cardCategories.setText(cardModelRV.getCategories("en-US"));
+            holder.cardCategories.setText(cardModel.getCategories("en-US"));
             holder.cardCategories.setSelected(true);
 
-            holder.itemView.setTag(cardModelRV);
+            holder.itemView.setTag(cardModel);
         }
 
         @Override
@@ -296,13 +251,17 @@ public class CardDetailFragment extends Fragment {
 
 
     private class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private int cardId;
+        private List<CardModel> cardModelList;
         private ImageView cardArt;
         private TextView cardName;
         private TextView cardCategories;
 
-        RecyclerViewHolder(View view) {
+        RecyclerViewHolder(View view, List<CardModel> cardModelList) {
             super(view);
             itemView.setOnClickListener(this);
+
+            this.cardModelList = cardModelList;
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
             cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
@@ -310,7 +269,8 @@ public class CardDetailFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = CardDetailActivity.newIntent(getActivity(), getArguments().getInt(CARD_ID), getAdapterPosition());
+            cardId = cardModelList.get(getAdapterPosition()).id;
+            Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
             startActivity(intent);
         }
     }
