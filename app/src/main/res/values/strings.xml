@@ -7,6 +7,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!-- card -->
+    <string name="card_faction">Faction</string>
+    <string name="card_rarity">Rarity</string>
+    <string name="card_str">Strength</string>
     <string name="card_categories">Categories</string>
     <string name="card_flavor">Flavor</string>
     <string name="card_info">Info</string>

@@ -1,5 +1,6 @@
 package com.robbcocco.gwenttracker;
 
+import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.robbcocco.gwenttracker.database.entity.CardModel;
@@ -44,12 +46,12 @@ public class CardDetailFragment extends Fragment {
     private ImageView artView;
     private TextView factionView;
     private TextView rarityView;
-    private TextView setView;
+    private TextView strView;
     private TextView categoriesView;
     private TextView flavorView;
     private TextView infoView;
 
-    private TextView relatedTitleView;
+    private LinearLayout relatedTitleView;
     private RelatedAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
 
@@ -106,12 +108,12 @@ public class CardDetailFragment extends Fragment {
         artView = (ImageView) view.findViewById(R.id.card_detail_art);
         factionView = (TextView) view.findViewById(R.id.card_detail_faction);
         rarityView = (TextView) view.findViewById(R.id.card_detail_rarity);
-        setView = (TextView) view.findViewById(R.id.card_detail_set);
+        strView = (TextView) view.findViewById(R.id.card_detail_set);
         categoriesView = (TextView) view.findViewById(R.id.card_detail_categories);
         flavorView = (TextView) view.findViewById(R.id.card_detail_flavor);
         infoView = (TextView) view.findViewById(R.id.card_detail_info);
 
-        relatedTitleView = (TextView) view.findViewById(R.id.card_detail_related_title);
+        relatedTitleView = (LinearLayout) view.findViewById(R.id.card_detail_related_title);
         recyclerView = (RecyclerView) view.findViewById(R.id.card_detail_related);
         recyclerViewAdapter = new RelatedAdapter(new ArrayList<CardModel>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -119,7 +121,7 @@ public class CardDetailFragment extends Fragment {
 
         if (toolbar != null) {
             ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-//            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         updateView();
@@ -137,14 +139,13 @@ public class CardDetailFragment extends Fragment {
                 GlideApp.with(getActivity())
                         .load(cardModel.getVariationModelList().get(0).getArt_medium().toString())
                         .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .placeholder(R.drawable.placeholder_card_low)
                         .into(artView);
             }
 
             if (cardModel.getFactionModel() != null && cardModel.getVariationModelList() != null) {
                 factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
                 rarityView.setText(cardModel.getVariationModelList().get(0).getRarityModel().getName());
-                setView.setText(cardModel.getVariationModelList().get(0).getSetModel().getName());
+                strView.setText(String.valueOf(cardModel.getStrength()));
             }
 
             categoriesView.setText(cardModel.getCategories("en-US"));
@@ -153,10 +154,10 @@ public class CardDetailFragment extends Fragment {
             infoView.setText(cardModel.getInfo().get("en-US"));
 
             if (cardModel.getRelatedCardModelList() != null && !cardModel.getRelatedCardModelList().isEmpty()) {
-                relatedTitleView.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.VISIBLE);
                 recyclerViewAdapter.updateRelatedList(cardModel.getRelatedCardModelList());
-
+            }
+            else {
+                relatedTitleView.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -218,14 +219,12 @@ public class CardDetailFragment extends Fragment {
         public void onBindViewHolder(final CardDetailFragment.RecyclerViewHolder holder, final int position) {
             final CardModel cardModel = cardModelList.get(position);
 
-            holder.cardArt.setImageResource(R.drawable.placeholder_card_low);
             if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
                     cardModel.getVariationModelList().get(0).getArt_low() != null) {
                 GlideApp.with(holder.itemView)
                         .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
                         .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .placeholder(R.drawable.placeholder_card_low)
                         .into(holder.cardArt);
             }
 
@@ -271,7 +270,8 @@ public class CardDetailFragment extends Fragment {
         public void onClick(View view) {
             cardId = cardModelList.get(getAdapterPosition()).id;
             Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
-            startActivity(intent);
+            startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
         }
     }
 }

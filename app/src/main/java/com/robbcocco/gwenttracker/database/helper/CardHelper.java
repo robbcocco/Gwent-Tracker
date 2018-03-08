@@ -110,14 +110,14 @@ public class CardHelper {
                 }
                 final MediatorLiveData<List<CardModel>> cardsMediatorLiveData = new MediatorLiveData<>();
                 for (final CardModel cardModel : input) {
-                    // Set faction
-                    cardsMediatorLiveData.addSource(cardDao.findFactionById(cardModel.getFaction_id()), new Observer<FactionModel>() {
-                        @Override
-                        public void onChanged(@Nullable FactionModel model) {
-                            cardModel.setFactionModel(model);
-                            cardsMediatorLiveData.postValue(input);
-                        }
-                    });
+//                    // Set faction
+//                    cardsMediatorLiveData.addSource(cardDao.findFactionById(cardModel.getFaction_id()), new Observer<FactionModel>() {
+//                        @Override
+//                        public void onChanged(@Nullable FactionModel model) {
+//                            cardModel.setFactionModel(model);
+//                            cardsMediatorLiveData.postValue(input);
+//                        }
+//                    });
                     // Set variations
                     cardsMediatorLiveData.addSource(variationHelper.findVariationsByCardId(cardModel.id), new Observer<List<VariationModel>>() {
                         @Override
@@ -134,30 +134,30 @@ public class CardHelper {
                             cardsMediatorLiveData.postValue(input);
                         }
                     });
-                    // Set keywords
-                    cardsMediatorLiveData.addSource(cardDao.getKeywordsByCardId(cardModel.id), new Observer<List<KeywordModel>>() {
-                        @Override
-                        public void onChanged(@Nullable List<KeywordModel> modelList) {
-                            cardModel.setKeywordModelList(modelList);
-                            cardsMediatorLiveData.postValue(input);
-                        }
-                    });
-                    // Set loyalties
-                    cardsMediatorLiveData.addSource(cardDao.getLoyaltiesByCardId(cardModel.id), new Observer<List<LoyaltyModel>>() {
-                        @Override
-                        public void onChanged(@Nullable List<LoyaltyModel> modelList) {
-                            cardModel.setLoyaltyModelList(modelList);
-                            cardsMediatorLiveData.postValue(input);
-                        }
-                    });
-                    // Set related cards
-                    cardsMediatorLiveData.addSource(cardDao.getRelatedCards(cardModel.id), new Observer<List<CardModel>>() {
-                        @Override
-                        public void onChanged(@Nullable List<CardModel> modelList) {
-                            cardModel.setRelatedCardModelList(modelList);
-                            cardsMediatorLiveData.postValue(input);
-                        }
-                    });
+//                    // Set keywords
+//                    cardsMediatorLiveData.addSource(cardDao.getKeywordsByCardId(cardModel.id), new Observer<List<KeywordModel>>() {
+//                        @Override
+//                        public void onChanged(@Nullable List<KeywordModel> modelList) {
+//                            cardModel.setKeywordModelList(modelList);
+//                            cardsMediatorLiveData.postValue(input);
+//                        }
+//                    });
+//                    // Set loyalties
+//                    cardsMediatorLiveData.addSource(cardDao.getLoyaltiesByCardId(cardModel.id), new Observer<List<LoyaltyModel>>() {
+//                        @Override
+//                        public void onChanged(@Nullable List<LoyaltyModel> modelList) {
+//                            cardModel.setLoyaltyModelList(modelList);
+//                            cardsMediatorLiveData.postValue(input);
+//                        }
+//                    });
+//                    // Set related cards
+//                    cardsMediatorLiveData.addSource(cardDao.getRelatedCards(cardModel.id), new Observer<List<CardModel>>() {
+//                        @Override
+//                        public void onChanged(@Nullable List<CardModel> modelList) {
+//                            cardModel.setRelatedCardModelList(modelList);
+//                            cardsMediatorLiveData.postValue(input);
+//                        }
+//                    });
                 }
                 return cardsMediatorLiveData;
             }

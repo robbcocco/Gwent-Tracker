@@ -1,5 +1,6 @@
 package com.robbcocco.gwenttracker;
 
+import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
@@ -85,14 +86,12 @@ public class CollectionFragment extends Fragment {
         public void onBindViewHolder(final CollectionFragment.RecyclerViewHolder holder, final int position) {
             final CardModel cardModel = cardModelList.get(position);
 
-            holder.cardArt.setImageResource(R.drawable.placeholder_card_low);
             if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
                     cardModel.getVariationModelList().get(0).getArt_low() != null) {
                 GlideApp.with(holder.itemView)
                         .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
                         .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .placeholder(R.drawable.placeholder_card_low)
                         .into(holder.cardArt);
             }
 
@@ -138,7 +137,8 @@ public class CollectionFragment extends Fragment {
         public void onClick(View view) {
             cardId = cardModelList.get(getAdapterPosition()).id;
             Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
-            startActivity(intent);
+            startActivity(intent,
+                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
         }
     }
 }
