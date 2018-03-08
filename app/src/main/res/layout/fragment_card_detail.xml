@@ -102,54 +102,82 @@
             tools:text="Relict" />
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        xmlns:tools="http://schemas.android.com/tools"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="12dp"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="0dp"
-            android:gravity="start"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-smallcaps"
-            android:textStyle="bold"
-            android:text="@string/card_flavor" />
-        <TextView
-            android:id="@+id/card_detail_flavor"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
-            tools:text="Dudu" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="12dp"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:paddingBottom="0dp"
-            android:gravity="start"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-smallcaps"
-            android:textStyle="bold"
-            android:text="@string/card_info" />
-        <TextView
-            android:id="@+id/card_detail_info"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
-            tools:text="Dudu" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:nestedScrollingEnabled="true">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="12dp"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="0dp"
+                android:gravity="start"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                android:text="@string/card_flavor" />
+            <TextView
+                android:id="@+id/card_detail_flavor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                tools:text="Dudu" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="12dp"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="0dp"
+                android:gravity="start"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                android:text="@string/card_info" />
+            <TextView
+                android:id="@+id/card_detail_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                tools:text="Dudu" />
+            <TextView
+                android:id="@+id/card_detail_related_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingTop="12dp"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="0dp"
+                android:gravity="start"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-smallcaps"
+                android:textStyle="bold"
+                android:text="@string/card_related" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/card_detail_related"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:scrollbars="horizontal">
 
-    </LinearLayout>
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,7 +1,6 @@
 package com.robbcocco.gwenttracker;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,14 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.robbcocco.gwenttracker.database.entity.CardModel;
-import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
@@ -37,6 +32,7 @@ public class CollectionFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private CollectionViewModel viewModel;
+
     private CollectionAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
 
@@ -147,7 +143,6 @@ public class CollectionFragment extends Fragment {
         public void onClick(View view) {
             Intent intent = CardDetailActivity.newIntent(getActivity(), getAdapterPosition());
             startActivity(intent);
-//            Toast.makeText(itemView.getContext(), String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
         }
     }
 }
