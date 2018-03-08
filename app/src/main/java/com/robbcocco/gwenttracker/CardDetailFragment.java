@@ -4,14 +4,10 @@ import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
@@ -51,11 +47,12 @@ public class CardDetailFragment extends Fragment {
     private Toolbar toolbar;
     private ImageView factionArtView;
     private ImageView artView;
+    private TextView strView;
     private TextView factionView;
     private TextView rarityView;
-    private TextView strView;
-    private TextView categoriesView;
     private TextView flavorView;
+    private LinearLayout categoriesViewParent;
+    private TextView categoriesView;
     private TextView infoView;
 
     private LinearLayout relatedTitleView;
@@ -117,11 +114,12 @@ public class CardDetailFragment extends Fragment {
         factionView = (TextView) view.findViewById(R.id.card_detail_faction);
         rarityView = (TextView) view.findViewById(R.id.card_detail_rarity);
         strView = (TextView) view.findViewById(R.id.card_detail_set);
+        categoriesViewParent = (LinearLayout) view.findViewById(R.id.card_detail_categories_parent);
         categoriesView = (TextView) view.findViewById(R.id.card_detail_categories);
         flavorView = (TextView) view.findViewById(R.id.card_detail_flavor);
         infoView = (TextView) view.findViewById(R.id.card_detail_info);
 
-        relatedTitleView = (LinearLayout) view.findViewById(R.id.card_detail_related_title);
+        relatedTitleView = (LinearLayout) view.findViewById(R.id.card_detail_related_parent);
         recyclerView = (RecyclerView) view.findViewById(R.id.card_detail_related_list);
         recyclerViewAdapter = new RelatedAdapter(new ArrayList<CardModel>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -150,6 +148,8 @@ public class CardDetailFragment extends Fragment {
                         .into(artView);
             }
 
+            strView.setText(String.valueOf(cardModel.getStrength()));
+
             if (cardModel.getFactionModel() != null && cardModel.getVariationModelList() != null) {
                 factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
                 int factionArtId;
@@ -177,12 +177,27 @@ public class CardDetailFragment extends Fragment {
                 factionArtView.setImageResource(factionArtId);
 
                 rarityView.setText(cardModel.getVariationModelList().get(0).getRarityModel().getName());
-                strView.setText(String.valueOf(cardModel.getStrength()));
+                rarityView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog
+                                .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setMessage(cardModel.getRarity("en-US"))
+                                .setTitle("Scraps");
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
             }
 
-            categoriesView.setText(cardModel.getCategories("en-US"));
-
             flavorView.setText(cardModel.getFlavor().get("en-US"));
+
+            if (!cardModel.getCategoryModelList().isEmpty()) {
+                categoriesView.setText(cardModel.getCategories("en-US"));
+            }
+            else {
+                categoriesViewParent.setVisibility(View.GONE);
+            }
 
             infoView.setText(cardModel.getInfo().get("en-US"));
             if (!cardModel.getKeywordModelList().isEmpty()) {
@@ -203,7 +218,7 @@ public class CardDetailFragment extends Fragment {
                 recyclerViewAdapter.updateRelatedList(cardModel.getRelatedCardModelList());
             }
             else {
-                relatedTitleView.setVisibility(View.INVISIBLE);
+                relatedTitleView.setVisibility(View.GONE);
             }
         }
     }

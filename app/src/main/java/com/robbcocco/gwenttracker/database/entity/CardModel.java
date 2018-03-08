@@ -130,6 +130,19 @@ public class CardModel {
         return variationModelList;
     }
 
+    public String getRarity(String lang) {
+        if (this.getVariationModelList() != null) {
+            String values;
+            values = "Standard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getStandard());
+            values = values + "\nPremium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getPremium());
+            values = values + "\nUpgrade: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getUpgrade()) + "\n";
+            values = values + "\nMill Standard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_standard());
+            values = values + "\nMill Premium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_premium());
+            return values;
+        }
+        return "";
+    }
+
     public void setVariationModelList(List<VariationModel> variationModelList) {
         this.variationModelList = variationModelList;
     }

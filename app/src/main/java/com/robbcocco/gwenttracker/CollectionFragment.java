@@ -98,8 +98,10 @@ public class CollectionFragment extends Fragment {
             holder.cardName.setText(cardModel.getName().get("en-US"));
             holder.cardName.setSelected(true);
 
-            holder.cardCategories.setText(cardModel.getCategories("en-US"));
-            holder.cardCategories.setSelected(true);
+            if (!cardModel.getCategoryModelList().isEmpty()) {
+                holder.cardCategories.setText(cardModel.getCategories("en-US"));
+                holder.cardCategories.setSelected(true);
+            }
 
             holder.itemView.setTag(cardModel);
         }
