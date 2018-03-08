@@ -43,6 +43,7 @@ public class CardDetailFragment extends Fragment {
     private CardModel cardModel;
     private CollapsingToolbarLayout collapsingToolbar;
     private Toolbar toolbar;
+    private ImageView factionArtView;
     private ImageView artView;
     private TextView factionView;
     private TextView rarityView;
@@ -105,6 +106,7 @@ public class CardDetailFragment extends Fragment {
         toolbar = (Toolbar) view.findViewById(R.id.card_detail_toolbar);
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.card_detail_collapsingtoolbar);
 
+        factionArtView = (ImageView) view.findViewById(R.id.card_detail_faction_art);
         artView = (ImageView) view.findViewById(R.id.card_detail_art);
         factionView = (TextView) view.findViewById(R.id.card_detail_faction);
         rarityView = (TextView) view.findViewById(R.id.card_detail_rarity);
@@ -114,9 +116,9 @@ public class CardDetailFragment extends Fragment {
         infoView = (TextView) view.findViewById(R.id.card_detail_info);
 
         relatedTitleView = (LinearLayout) view.findViewById(R.id.card_detail_related_title);
-        recyclerView = (RecyclerView) view.findViewById(R.id.card_detail_related);
+        recyclerView = (RecyclerView) view.findViewById(R.id.card_detail_related_list);
         recyclerViewAdapter = new RelatedAdapter(new ArrayList<CardModel>());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(recyclerViewAdapter);
 
         if (toolbar != null) {
@@ -144,6 +146,18 @@ public class CardDetailFragment extends Fragment {
 
             if (cardModel.getFactionModel() != null && cardModel.getVariationModelList() != null) {
                 factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
+                int factionArtId;
+                switch (cardModel.getFactionModel().getTag()) {
+                    case "Monster": factionArtId = R.drawable.monsters; break;
+                    case "Nilfgaard": factionArtId = R.drawable.nilfgaard; break;
+                    case "Northern Realms": factionArtId = R.drawable.northernrealms; break;
+                    case "Scoiatael": factionArtId = R.drawable.scoiatael; break;
+                    case "Skellige": factionArtId = R.drawable.skellige; break;
+                    case "Neutral":
+                    default: factionArtId = R.drawable.neutral; break;
+                }
+                factionArtView.setImageResource(factionArtId);
+
                 rarityView.setText(cardModel.getVariationModelList().get(0).getRarityModel().getName());
                 strView.setText(String.valueOf(cardModel.getStrength()));
             }
@@ -212,27 +226,18 @@ public class CardDetailFragment extends Fragment {
         @Override
         public CardDetailFragment.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new CardDetailFragment.RecyclerViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.collection_card, parent, false), cardModelList);
+                    .inflate(R.layout.card_detail_related, parent, false), cardModelList);
         }
 
         @Override
         public void onBindViewHolder(final CardDetailFragment.RecyclerViewHolder holder, final int position) {
             final CardModel cardModel = cardModelList.get(position);
 
-            if (cardModel.getVariationModelList() != null &&
-                    !cardModel.getVariationModelList().isEmpty() &&
-                    cardModel.getVariationModelList().get(0).getArt_low() != null) {
-                GlideApp.with(holder.itemView)
-                        .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
-                        .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .into(holder.cardArt);
-            }
-
             holder.cardName.setText(cardModel.getName().get("en-US"));
             holder.cardName.setSelected(true);
 
-            holder.cardCategories.setText(cardModel.getCategories("en-US"));
-            holder.cardCategories.setSelected(true);
+            holder.cardInfo.setText(cardModel.getInfo().get("en-US"));
+            holder.cardInfo.setSelected(true);
 
             holder.itemView.setTag(cardModel);
         }
@@ -252,18 +257,16 @@ public class CardDetailFragment extends Fragment {
     private class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int cardId;
         private List<CardModel> cardModelList;
-        private ImageView cardArt;
         private TextView cardName;
-        private TextView cardCategories;
+        private TextView cardInfo;
 
         RecyclerViewHolder(View view, List<CardModel> cardModelList) {
             super(view);
             itemView.setOnClickListener(this);
 
             this.cardModelList = cardModelList;
-            cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
-            cardName = (TextView) view.findViewById(R.id.collection_card_name);
-            cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
+            cardName = (TextView) view.findViewById(R.id.card_detail_related_card_name);
+            cardInfo = (TextView) view.findViewById(R.id.card_detail_related_card_info);
         }
 
         @Override
