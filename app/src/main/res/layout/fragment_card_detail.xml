@@ -224,44 +224,6 @@
                 app:contentPaddingLeft="2dp"
                 app:cardCornerRadius="0dp">
                 <LinearLayout
-                    android:id="@+id/card_detail_categories_parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@color/colorPrimary"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:gravity="start"
-                        android:textSize="12sp"
-                        android:fontFamily="sans-serif-smallcaps"
-                        android:textStyle="normal"
-                        android:text="@string/card_categories"/>
-                    <TextView
-                        android:id="@+id/card_detail_categories"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="8dp"
-                        android:gravity="start"
-                        android:textSize="16sp"
-                        android:fontFamily="sans-serif-condensed"
-                        android:textStyle="normal"
-                        tools:text="Witcher, Relic, Spell, Special"/>
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:cardBackgroundColor="@color/colorAccent"
-                app:contentPaddingLeft="2dp"
-                app:cardCornerRadius="0dp">
-                <LinearLayout
                     android:id="@+id/card_detail_info_parent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -290,6 +252,44 @@
                         android:fontFamily="sans-serif-condensed"
                         android:textStyle="normal"
                         tools:text="Do something"/>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/colorAccent"
+                app:contentPaddingLeft="2dp"
+                app:cardCornerRadius="0dp">
+                <LinearLayout
+                    android:id="@+id/card_detail_categories_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/colorPrimary"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:gravity="start"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-smallcaps"
+                        android:textStyle="normal"
+                        android:text="@string/card_categories"/>
+                    <TextView
+                        android:id="@+id/card_detail_categories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="8dp"
+                        android:gravity="start"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="normal"
+                        tools:text="Witcher, Relic, Spell, Special"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
             <android.support.v7.widget.CardView
