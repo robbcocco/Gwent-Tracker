@@ -119,21 +119,21 @@ public class CardHelper {
 //                        }
 //                    });
                     // Set variations
-                    cardsMediatorLiveData.addSource(variationHelper.findVariationsByCardId(cardModel.id), new Observer<List<VariationModel>>() {
+                    cardsMediatorLiveData.addSource(cardDao.findVariationsByCardId(cardModel.id), new Observer<List<VariationModel>>() {
                         @Override
                         public void onChanged(@Nullable List<VariationModel> modelList) {
                             cardModel.setVariationModelList(modelList);
                             cardsMediatorLiveData.postValue(input);
                         }
                     });
-                    // Set categories
-                    cardsMediatorLiveData.addSource(cardDao.getCategoriesByCardId(cardModel.id), new Observer<List<CategoryModel>>() {
-                        @Override
-                        public void onChanged(@Nullable List<CategoryModel> modelList) {
-                            cardModel.setCategoryModelList(modelList);
-                            cardsMediatorLiveData.postValue(input);
-                        }
-                    });
+//                    // Set categories
+//                    cardsMediatorLiveData.addSource(cardDao.getCategoriesByCardId(cardModel.id), new Observer<List<CategoryModel>>() {
+//                        @Override
+//                        public void onChanged(@Nullable List<CategoryModel> modelList) {
+//                            cardModel.setCategoryModelList(modelList);
+//                            cardsMediatorLiveData.postValue(input);
+//                        }
+//                    });
 //                    // Set keywords
 //                    cardsMediatorLiveData.addSource(cardDao.getKeywordsByCardId(cardModel.id), new Observer<List<KeywordModel>>() {
 //                        @Override

@@ -98,10 +98,10 @@ public class CollectionFragment extends Fragment {
             holder.cardName.setText(cardModel.getName().get("en-US"));
             holder.cardName.setSelected(true);
 
-            if (!cardModel.getCategoryModelList().isEmpty()) {
-                holder.cardCategories.setText(cardModel.getCategories("en-US"));
-                holder.cardCategories.setSelected(true);
-            }
+//            if (!cardModel.getCategoryModelList().isEmpty()) {
+//                holder.cardCategories.setText(cardModel.getCategories("en-US"));
+//                holder.cardCategories.setSelected(true);
+//            }
 
             holder.itemView.setTag(cardModel);
         }
@@ -123,7 +123,7 @@ public class CollectionFragment extends Fragment {
         private List<CardModel> cardModelList;
         private ImageView cardArt;
         private TextView cardName;
-        private TextView cardCategories;
+//        private TextView cardCategories;
 
         RecyclerViewHolder(View view, List<CardModel> cardModelList) {
             super(view);
@@ -132,7 +132,7 @@ public class CollectionFragment extends Fragment {
             this.cardModelList = cardModelList;
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
-            cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
+//            cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
         }
 
         @Override

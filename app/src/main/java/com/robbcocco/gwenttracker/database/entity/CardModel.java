@@ -133,11 +133,13 @@ public class CardModel {
     public String getRarity(String lang) {
         if (this.getVariationModelList() != null) {
             String values;
-            values = "Standard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getStandard());
+            values = "Craft";
+            values = values + "\nStandard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getStandard());
             values = values + "\nPremium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getPremium());
-            values = values + "\nUpgrade: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getUpgrade()) + "\n";
-            values = values + "\nMill Standard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_standard());
-            values = values + "\nMill Premium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_premium());
+            values = values + "\nUpgrade: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getUpgrade());
+            values = values + "\nMill";
+            values = values + "\nStandard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_standard());
+            values = values + "\nPremium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_premium());
             return values;
         }
         return "";
