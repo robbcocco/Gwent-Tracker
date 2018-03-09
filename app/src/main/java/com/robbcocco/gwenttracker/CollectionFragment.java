@@ -3,10 +3,13 @@ package com.robbcocco.gwenttracker;
 import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,9 +18,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
+import com.robbcocco.gwenttracker.database.helper.CardHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
@@ -27,7 +34,6 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 
 public class CollectionFragment extends Fragment {
-    private CollectionViewModel viewModel;
 
     private CollectionAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
@@ -55,20 +61,13 @@ public class CollectionFragment extends Fragment {
 
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        viewModel = ViewModelProviders.of(this).get(CollectionViewModel.class);
-
-        viewModel.getCardModelList().observe(getActivity(), new Observer<List<CardModel>>() {
-            @Override
-            public void onChanged(@Nullable List<CardModel> cardModelList) {
-                recyclerViewAdapter.updateCardModelList(cardModelList);
-            }
-        });
+        new GetCardListTask(recyclerViewAdapter).execute(getActivity().getApplicationContext());
 
         return rootView;
     }
 
 
-    private class CollectionAdapter extends RecyclerView.Adapter<CollectionFragment.RecyclerViewHolder> {
+    public class CollectionAdapter extends RecyclerView.Adapter<CollectionFragment.RecyclerViewHolder> {
 
         private List<CardModel> cardModelList;
 
@@ -98,11 +97,6 @@ public class CollectionFragment extends Fragment {
             holder.cardName.setText(cardModel.getName().get("en-US"));
             holder.cardName.setSelected(true);
 
-//            if (!cardModel.getCategoryModelList().isEmpty()) {
-//                holder.cardCategories.setText(cardModel.getCategories("en-US"));
-//                holder.cardCategories.setSelected(true);
-//            }
-
             holder.itemView.setTag(cardModel);
         }
 
@@ -114,6 +108,16 @@ public class CollectionFragment extends Fragment {
         public void updateCardModelList(List<CardModel> cardModelList) {
             this.cardModelList = cardModelList;
             notifyDataSetChanged();
+
+            for (CardModel cardModel : cardModelList) {
+                new GetCardDetailTask(recyclerViewAdapter, cardModel.id, cardModelList.indexOf(cardModel))
+                        .execute(getActivity().getApplicationContext());
+            }
+        }
+
+        public void updateCardModelAtPosition(CardModel cardModel, int position) {
+            this.cardModelList.set(position, cardModel);
+            notifyItemChanged(position);
         }
     }
 
@@ -123,7 +127,6 @@ public class CollectionFragment extends Fragment {
         private List<CardModel> cardModelList;
         private ImageView cardArt;
         private TextView cardName;
-//        private TextView cardCategories;
 
         RecyclerViewHolder(View view, List<CardModel> cardModelList) {
             super(view);
@@ -132,7 +135,6 @@ public class CollectionFragment extends Fragment {
             this.cardModelList = cardModelList;
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
-//            cardCategories = (TextView) view.findViewById(R.id.collection_card_categories);
         }
 
         @Override
@@ -141,6 +143,65 @@ public class CollectionFragment extends Fragment {
             Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
             startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+        }
+    }
+
+
+    public static class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
+
+        private final CollectionAdapter collectionAdapter;
+
+        public GetCardListTask(CollectionAdapter collectionAdapter) {
+            this.collectionAdapter = collectionAdapter;
+        }
+
+        @Override
+        protected List<CardModel> doInBackground(Context... context) {
+            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
+            List<CardModel> cardModelList = mDb.cardDao().loadAllCards();
+
+            Collections.sort(cardModelList, new Comparator<CardModel>() {
+                @Override
+                public int compare(CardModel c1, CardModel c2) {
+                    return c1.getName().get("en-US")
+                            .compareToIgnoreCase(c2.getName().get("en-US"));
+                }
+            });
+
+            return cardModelList;
+        }
+
+        @Override
+        protected void onPostExecute(List<CardModel> result) {
+            collectionAdapter.updateCardModelList(result);
+        }
+    }
+
+
+    public class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
+
+        private final CollectionAdapter collectionAdapter;
+
+        private final int cardId;
+        private final int position;
+
+        public GetCardDetailTask(CollectionAdapter collectionAdapter, int cardId, int position) {
+            this.collectionAdapter = collectionAdapter;
+            this.cardId = cardId;
+            this.position = position;
+        }
+
+        @Override
+        protected CardModel doInBackground(Context... context) {
+            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
+            CardHelper cardHelper = new CardHelper(mDb);
+
+            return cardHelper.findCardById(cardId);
+        }
+
+        @Override
+        protected void onPostExecute(CardModel result) {
+            collectionAdapter.updateCardModelAtPosition(result, position);
         }
     }
 }

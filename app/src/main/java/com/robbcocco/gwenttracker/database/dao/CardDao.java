@@ -11,6 +11,8 @@ import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
 import com.robbcocco.gwenttracker.database.entity.KeywordModel;
 import com.robbcocco.gwenttracker.database.entity.LoyaltyModel;
+import com.robbcocco.gwenttracker.database.entity.RarityModel;
+import com.robbcocco.gwenttracker.database.entity.SetModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
 
 import java.util.List;
@@ -34,28 +36,34 @@ public interface CardDao {
     List<CardModel> testDB();
 
     @Query("SELECT * FROM cards WHERE cardid = :id LIMIT 1")
-    LiveData<CardModel> findCardById(int id);
+    CardModel findCardById(int id);
 
     @Query("SELECT * FROM factions WHERE factionid = :factionId LIMIT 1")
-    LiveData<FactionModel> findFactionById(int factionId);
+    FactionModel findFactionById(int factionId);
 
     @Query("SELECT DISTINCT cards.* FROM cards INNER JOIN variations ON cards.cardid = variations.card_id WHERE variations.collectible = 1")
-    LiveData<List<CardModel>> loadAllCards();
+    List<CardModel> loadAllCards();
 
     @Query("SELECT * FROM variations WHERE card_id = :cardId")
-    LiveData<List<VariationModel>> findVariationsByCardId(int cardId);
+    List<VariationModel> findVariationsByCardId(int cardId);
+
+    @Query("SELECT * FROM rarities WHERE rarityid = :rarityId LIMIT 1")
+    RarityModel findRarityByVarId(int rarityId);
+
+    @Query("SELECT * FROM sets WHERE setid = :setId LIMIT 1")
+    SetModel findSetByVarId(int setId);
 
     @Query("SELECT * FROM categories INNER JOIN card_categories ON categories.categoryid = card_categories.category_id WHERE card_categories.card_id = :cardId")
-    LiveData<List<CategoryModel>> getCategoriesByCardId(int cardId);
+    List<CategoryModel> getCategoriesByCardId(int cardId);
 
     @Query("SELECT * FROM keywords INNER JOIN card_keywords ON keywords.keywordid = card_keywords.keyword_id WHERE card_keywords.card_id = :cardId")
-    LiveData<List<KeywordModel>> getKeywordsByCardId(int cardId);
+    List<KeywordModel> getKeywordsByCardId(int cardId);
 
     @Query("SELECT * FROM loyalties INNER JOIN card_loyalties ON loyalties.loyaltyid = card_loyalties.loyalty_id WHERE card_loyalties.card_id = :cardId")
-    LiveData<List<LoyaltyModel>> getLoyaltiesByCardId(int cardId);
+    List<LoyaltyModel> getLoyaltiesByCardId(int cardId);
 
     @Query("SELECT * FROM cards INNER JOIN related_cards ON cards.cardid = related_cards.related_card_id WHERE related_cards.card_id = :cardId")
-    LiveData<List<CardModel>> getRelatedCards(int cardId);
+    List<CardModel> getRelatedCards(int cardId);
 
 //    @Query("SELECT * FROM cards WHERE card_name LIKE '%'||:name||'%'")
 //    LiveData<List<CardModel>> findCardsByName(String name);

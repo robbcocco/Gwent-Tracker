@@ -8,12 +8,7 @@ import android.arch.lifecycle.Transformations;
 import android.support.annotation.Nullable;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
-import com.robbcocco.gwenttracker.database.dao.VariationDao;
-import com.robbcocco.gwenttracker.database.entity.CardModel;
-import com.robbcocco.gwenttracker.database.entity.CategoryModel;
-import com.robbcocco.gwenttracker.database.entity.FactionModel;
-import com.robbcocco.gwenttracker.database.entity.KeywordModel;
-import com.robbcocco.gwenttracker.database.entity.LoyaltyModel;
+import com.robbcocco.gwenttracker.database.dao.CardDao;
 import com.robbcocco.gwenttracker.database.entity.RarityModel;
 import com.robbcocco.gwenttracker.database.entity.SetModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
@@ -25,39 +20,20 @@ import java.util.List;
  */
 
 public class VariationHelper {
-    private VariationDao variationDao;
+    private CardDao cardDao;
 
     public VariationHelper(CardDatabase cardDatabase) {
-        variationDao = cardDatabase.variationDao();
+        cardDao = cardDatabase.cardDao();
     }
 
-    public LiveData<List<VariationModel>> findVariationsByCardId(int cardId) {
-        LiveData<List<VariationModel>> variationsByCardId = variationDao.findVariationsByCardId(cardId);
-        variationsByCardId = Transformations.switchMap(variationsByCardId, new Function<List<VariationModel>, LiveData<List<VariationModel>>>() {
-            @Override
-            public LiveData<List<VariationModel>> apply(final List<VariationModel> input) {
-                final MediatorLiveData<List<VariationModel>> variationsMediatorLiveData = new MediatorLiveData<>();
-                for (final VariationModel variationModel : input) {
-                    // Set rarity
-                    variationsMediatorLiveData.addSource(variationDao.findRarityById(variationModel.getRarity_id()), new Observer<RarityModel>() {
-                        @Override
-                        public void onChanged(@Nullable RarityModel model) {
-                            variationModel.setRarityModel(model);
-                            variationsMediatorLiveData.postValue(input);
-                        }
-                    });
-                    // Set set
-                    variationsMediatorLiveData.addSource(variationDao.findSetById(variationModel.getSet_id()), new Observer<SetModel>() {
-                        @Override
-                        public void onChanged(@Nullable SetModel model) {
-                            variationModel.setSetModel(model);
-                            variationsMediatorLiveData.postValue(input);
-                        }
-                    });
-                }
-                return variationsMediatorLiveData;
-            }
-        });
-        return variationsByCardId;
+    public List<VariationModel> findVariationsByCardId(int cardId) {
+        List<VariationModel> variationModelList = cardDao.findVariationsByCardId(cardId);
+
+        for (VariationModel variationModel : variationModelList) {
+            variationModel.setRarityModel(cardDao.findRarityByVarId(variationModel.getRarity_id()));
+            variationModel.setSetModel(cardDao.findSetByVarId(variationModel.getSet_id()));
+        }
+
+        return variationModelList;
     }
 }

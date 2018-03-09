@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -21,7 +22,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
+import com.robbcocco.gwenttracker.database.helper.CardHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +42,6 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 public class CardDetailFragment extends Fragment {
     private static final String CARD_ID = "card_id";
-
-    private CardDetailViewModelFactory.CardDetailViewModel viewModel;
 
     private CardModel cardModel;
     private CollapsingToolbarLayout collapsingToolbar;
@@ -85,18 +86,9 @@ public class CardDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             int cardId = getArguments().getInt(CARD_ID);
-            viewModel = ViewModelProviders
-                    .of(this,
-                            new CardDetailViewModelFactory(getActivity().getApplication(), cardId))
-                    .get(CardDetailViewModelFactory.CardDetailViewModel.class);
 
-            viewModel.getCardModel().observe(getActivity(), new Observer<CardModel>() {
-                @Override
-                public void onChanged(@Nullable CardModel model) {
-                    cardModel = model;
-                    updateView();
-                }
-            });
+            CardDatabase mDb = CardDatabase.getDatabase(getActivity().getApplication());
+            new GetCardDetailTask(cardId).execute(mDb);
         }
     }
 
@@ -150,7 +142,7 @@ public class CardDetailFragment extends Fragment {
 
             strView.setText(String.valueOf(cardModel.getStrength()));
 
-            if (cardModel.getFactionModel() != null && cardModel.getVariationModelList() != null) {
+            if (cardModel.getFactionModel() != null) {
                 factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
                 int factionArtId;
                 switch (cardModel.getFactionModel().getTag()) {
@@ -175,7 +167,9 @@ public class CardDetailFragment extends Fragment {
                         break;
                 }
                 factionArtView.setImageResource(factionArtId);
+            }
 
+            if (cardModel.getVariationModelList().get(0).getRarityModel() != null) {
                 rarityView.setText(cardModel.getVariationModelList().get(0).getRarityModel().getName());
                 rarityView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -280,7 +274,8 @@ public class CardDetailFragment extends Fragment {
         public void onBindViewHolder(final CardDetailFragment.RecyclerViewHolder holder, final int position) {
             final CardModel cardModel = cardModelList.get(position);
 
-            holder.cardName.setText(cardModel.getName().get("en-US"));
+            String strengthDotName = String.valueOf(cardModel.getStrength()) + " • " + cardModel.getName().get("en-US");
+            holder.cardName.setText(strengthDotName);
             holder.cardName.setSelected(true);
 
             holder.cardInfo.setText(cardModel.getInfo().get("en-US"));
@@ -322,6 +317,29 @@ public class CardDetailFragment extends Fragment {
             Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
             startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+        }
+    }
+
+
+    public class GetCardDetailTask extends AsyncTask<CardDatabase, Void, CardModel> {
+
+        private final int cardId;
+
+        public GetCardDetailTask(int cardId) {
+            this.cardId = cardId;
+        }
+
+        @Override
+        protected CardModel doInBackground(CardDatabase... mDb) {
+            CardHelper cardHelper = new CardHelper(mDb[0]);
+
+            return cardHelper.findCardById(cardId);
+        }
+
+        @Override
+        protected void onPostExecute(CardModel result) {
+            cardModel = result;
+            updateView();
         }
     }
 }
