@@ -14,4 +14,43 @@
     <string name="card_flavor">Flavor</string>
     <string name="card_info">Info</string>
     <string name="card_related">Related</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_languages_list">Language</string>
+    <string-array name="pref_lang_list_titles">
+        <item>de-DE</item>
+        <item>en-US</item>
+        <item>es-ES</item>
+        <item>es-MX</item>
+        <item>fr-FR</item>
+        <item>it-IT</item>
+        <item>ja-JP</item>
+        <item>ko-KR</item>
+        <item>pl-PL</item>
+        <item>pt-BR</item>
+        <item>ru-RU</item>
+        <item>zh-CN</item>
+        <item>zh-TW</item>
+    </string-array>
+    <string-array name="pref_lang_list_values">
+        <item>de-DE</item>
+        <item>en-US</item>
+        <item>es-ES</item>
+        <item>es-MX</item>
+        <item>fr-FR</item>
+        <item>it-IT</item>
+        <item>ja-JP</item>
+        <item>ko-KR</item>
+        <item>pl-PL</item>
+        <item>pt-BR</item>
+        <item>ru-RU</item>
+        <item>zh-CN</item>
+        <item>zh-TW</item>
+    </string-array>
+
 </resources>

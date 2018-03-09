@@ -4,8 +4,10 @@ import android.app.ActivityOptions;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -42,6 +44,9 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 public class CardDetailFragment extends Fragment {
     private static final String CARD_ID = "card_id";
+
+    private SharedPreferences sharedPreferences;
+    private static String LANGUAGE="en-US";
 
     private CardModel cardModel;
     private CollapsingToolbarLayout collapsingToolbar;
@@ -84,6 +89,10 @@ public class CardDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        LANGUAGE = sharedPreferences.getString("lang_list", "en-US");
+
         if (getArguments() != null) {
             int cardId = getArguments().getInt(CARD_ID);
 
@@ -129,7 +138,7 @@ public class CardDetailFragment extends Fragment {
 
     private void updateView() {
         if (cardModel != null) {
-            collapsingToolbar.setTitle(cardModel.getName().get("en-US"));
+            collapsingToolbar.setTitle(cardModel.getName().get(LANGUAGE));
 
             if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
@@ -143,7 +152,7 @@ public class CardDetailFragment extends Fragment {
             strView.setText(String.valueOf(cardModel.getStrength()));
 
             if (cardModel.getFactionModel() != null) {
-                factionView.setText(cardModel.getFactionModel().getName().get("en-US"));
+                factionView.setText(cardModel.getFactionModel().getName().get(LANGUAGE));
                 int factionArtId;
                 switch (cardModel.getFactionModel().getTag()) {
                     case "Monster":
@@ -176,7 +185,7 @@ public class CardDetailFragment extends Fragment {
                     public void onClick(View v) {
                         AlertDialog.Builder builder = new AlertDialog
                                 .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
-                        builder.setMessage(cardModel.getRarity("en-US"))
+                        builder.setMessage(cardModel.getRarity(LANGUAGE))
                                 .setTitle("Scraps");
                         AlertDialog dialog = builder.create();
                         dialog.show();
@@ -184,23 +193,23 @@ public class CardDetailFragment extends Fragment {
                 });
             }
 
-            flavorView.setText(cardModel.getFlavor().get("en-US"));
+            flavorView.setText(cardModel.getFlavor().get(LANGUAGE));
 
             if (!cardModel.getCategoryModelList().isEmpty()) {
-                categoriesView.setText(cardModel.getCategories("en-US"));
+                categoriesView.setText(cardModel.getCategories(LANGUAGE));
             }
             else {
                 categoriesViewParent.setVisibility(View.GONE);
             }
 
-            infoView.setText(cardModel.getInfo().get("en-US"));
+            infoView.setText(cardModel.getInfo().get(LANGUAGE));
             if (!cardModel.getKeywordModelList().isEmpty()) {
                 infoView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         AlertDialog.Builder builder = new AlertDialog
                                 .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
-                        builder.setMessage(cardModel.getKeywords("en-US"))
+                        builder.setMessage(cardModel.getKeywords(LANGUAGE))
                                 .setTitle("Keywords");
                         AlertDialog dialog = builder.create();
                         dialog.show();
@@ -274,11 +283,11 @@ public class CardDetailFragment extends Fragment {
         public void onBindViewHolder(final CardDetailFragment.RecyclerViewHolder holder, final int position) {
             final CardModel cardModel = cardModelList.get(position);
 
-            String strengthDotName = String.valueOf(cardModel.getStrength()) + " • " + cardModel.getName().get("en-US");
+            String strengthDotName = String.valueOf(cardModel.getStrength()) + " • " + cardModel.getName().get(LANGUAGE);
             holder.cardName.setText(strengthDotName);
             holder.cardName.setSelected(true);
 
-            holder.cardInfo.setText(cardModel.getInfo().get("en-US"));
+            holder.cardInfo.setText(cardModel.getInfo().get(LANGUAGE));
             holder.cardInfo.setSelected(true);
 
             holder.itemView.setTag(cardModel);

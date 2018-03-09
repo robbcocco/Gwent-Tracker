@@ -5,8 +5,10 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -34,6 +36,8 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 
 public class CollectionFragment extends Fragment {
+    private SharedPreferences sharedPreferences;
+    private static String LANGUAGE="en-US";
 
     private CollectionAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
@@ -48,6 +52,14 @@ public class CollectionFragment extends Fragment {
     public static CollectionFragment newInstance() {
         CollectionFragment fragment = new CollectionFragment();
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        LANGUAGE = sharedPreferences.getString("lang_list", "en-US");
     }
 
     @Override
@@ -94,7 +106,7 @@ public class CollectionFragment extends Fragment {
                         .into(holder.cardArt);
             }
 
-            holder.cardName.setText(cardModel.getName().get("en-US"));
+            holder.cardName.setText(cardModel.getName().get(LANGUAGE));
             holder.cardName.setSelected(true);
 
             holder.itemView.setTag(cardModel);
@@ -163,8 +175,8 @@ public class CollectionFragment extends Fragment {
             Collections.sort(cardModelList, new Comparator<CardModel>() {
                 @Override
                 public int compare(CardModel c1, CardModel c2) {
-                    return c1.getName().get("en-US")
-                            .compareToIgnoreCase(c2.getName().get("en-US"));
+                    return c1.getName().get(LANGUAGE)
+                            .compareToIgnoreCase(c2.getName().get(LANGUAGE));
                 }
             });
 

@@ -1,5 +1,7 @@
 package com.robbcocco.gwenttracker;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.TabLayout;
@@ -94,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class),
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         }
 
         return super.onOptionsItemSelected(item);
