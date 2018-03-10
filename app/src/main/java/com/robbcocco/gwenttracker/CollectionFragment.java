@@ -12,9 +12,16 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -35,12 +42,58 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  * Created by rober on 3/3/2018.
  */
 
-public class CollectionFragment extends Fragment {
+public class CollectionFragment extends Fragment implements SearchView.OnQueryTextListener {
     private SharedPreferences sharedPreferences;
     private static String LANGUAGE="en-US";
 
     private CollectionAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
+
+    private final Comparator<CardModel> ALPHABETICAL_COMPARATOR = new Comparator<CardModel>() {
+        @Override
+        public int compare(CardModel a, CardModel b) {
+            return a.getName().get(LANGUAGE)
+                    .compareToIgnoreCase(b.getName().get(LANGUAGE));
+        }
+    };
+    private final SortedList.Callback<CardModel> mCallback = new SortedList.Callback<CardModel>() {
+        @Override
+        public void onInserted(int position, int count) {
+            recyclerViewAdapter.notifyItemRangeInserted(position, count);
+        }
+
+        @Override
+        public void onRemoved(int position, int count) {
+            recyclerViewAdapter.notifyItemRangeRemoved(position, count);
+        }
+
+        @Override
+        public void onMoved(int fromPosition, int toPosition) {
+            recyclerViewAdapter.notifyItemMoved(fromPosition, toPosition);
+        }
+
+        @Override
+        public void onChanged(int position, int count) {
+            recyclerViewAdapter.notifyItemRangeChanged(position, count);
+        }
+
+        @Override
+        public int compare(CardModel a, CardModel b) {
+            return ALPHABETICAL_COMPARATOR.compare(a, b);
+        }
+
+        @Override
+        public boolean areContentsTheSame(CardModel oldItem, CardModel newItem) {
+            return oldItem.equals(newItem);
+        }
+
+        @Override
+        public boolean areItemsTheSame(CardModel item1, CardModel item2) {
+            return item1.id == item2.id;
+        }
+    };
+    private List<CardModel> cardModelList;
+    private final SortedList<CardModel> mSortedList = new SortedList<>(CardModel.class, mCallback);
 
     public CollectionFragment() {
     }
@@ -60,6 +113,8 @@ public class CollectionFragment extends Fragment {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         LANGUAGE = sharedPreferences.getString("lang_list", "en-US");
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -78,24 +133,58 @@ public class CollectionFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        final List<CardModel> filteredModelList = filter(cardModelList, query);
+        recyclerViewAdapter.replaceAll(filteredModelList);
+        recyclerView.scrollToPosition(0);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    private static List<CardModel> filter(List<CardModel> models, String query) {
+        final String lowerCaseQuery = query.toLowerCase();
+
+        final List<CardModel> filteredModelList = new ArrayList<>();
+        for (CardModel model : models) {
+            final String text = model.getName().get(LANGUAGE).toLowerCase() + model.getInfo().get(LANGUAGE).toLowerCase();
+            if (text.contains(lowerCaseQuery)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
+    }
+
 
     public class CollectionAdapter extends RecyclerView.Adapter<CollectionFragment.RecyclerViewHolder> {
 
-        private List<CardModel> cardModelList;
-
-        public CollectionAdapter(List<CardModel> cardModelList) {
-            this.cardModelList = cardModelList;
+        public CollectionAdapter(List<CardModel> cardModels) {
+            cardModelList = cardModels;
         }
 
         @Override
         public CollectionFragment.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new CollectionFragment.RecyclerViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.collection_card, parent, false), cardModelList);
+                    .inflate(R.layout.collection_card, parent, false));
         }
 
         @Override
         public void onBindViewHolder(final CollectionFragment.RecyclerViewHolder holder, final int position) {
-            final CardModel cardModel = cardModelList.get(position);
+            final CardModel cardModel = mSortedList.get(position);
 
             if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
@@ -114,12 +203,12 @@ public class CollectionFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return cardModelList.size();
+            return mSortedList.size();
         }
 
-        public void updateCardModelList(List<CardModel> cardModelList) {
-            this.cardModelList = cardModelList;
-            notifyDataSetChanged();
+        public void updateCardModelList(List<CardModel> cardModels) {
+            cardModelList = cardModels;
+            add(cardModels);
 
             for (CardModel cardModel : cardModelList) {
                 new GetCardDetailTask(recyclerViewAdapter, cardModel.id, cardModelList.indexOf(cardModel))
@@ -128,30 +217,60 @@ public class CollectionFragment extends Fragment {
         }
 
         public void updateCardModelAtPosition(CardModel cardModel, int position) {
-            this.cardModelList.set(position, cardModel);
-            notifyItemChanged(position);
+            cardModelList.set(position, cardModel);
+            add(cardModel);
+        }
+
+        public void add(CardModel model) {
+            mSortedList.add(model);
+        }
+
+        public void remove(CardModel model) {
+            mSortedList.remove(model);
+        }
+
+        public void add(List<CardModel> models) {
+            mSortedList.addAll(models);
+        }
+
+        public void remove(List<CardModel> models) {
+            mSortedList.beginBatchedUpdates();
+            for (CardModel model : models) {
+                mSortedList.remove(model);
+            }
+            mSortedList.endBatchedUpdates();
+        }
+
+        public void replaceAll(List<CardModel> models) {
+            mSortedList.beginBatchedUpdates();
+            for (int i = mSortedList.size() - 1; i >= 0; i--) {
+                final CardModel model = mSortedList.get(i);
+                if (!models.contains(model)) {
+                    mSortedList.remove(model);
+                }
+            }
+            mSortedList.addAll(models);
+            mSortedList.endBatchedUpdates();
         }
     }
 
 
     private class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int cardId;
-        private List<CardModel> cardModelList;
         private ImageView cardArt;
         private TextView cardName;
 
-        RecyclerViewHolder(View view, List<CardModel> cardModelList) {
+        RecyclerViewHolder(View view) {
             super(view);
             itemView.setOnClickListener(this);
 
-            this.cardModelList = cardModelList;
             cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
             cardName = (TextView) view.findViewById(R.id.collection_card_name);
         }
 
         @Override
         public void onClick(View view) {
-            cardId = cardModelList.get(getAdapterPosition()).id;
+            cardId = mSortedList.get(getAdapterPosition()).id;
             Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
             startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
@@ -172,13 +291,13 @@ public class CollectionFragment extends Fragment {
             CardDatabase mDb = CardDatabase.getDatabase(context[0]);
             List<CardModel> cardModelList = mDb.cardDao().loadAllCards();
 
-            Collections.sort(cardModelList, new Comparator<CardModel>() {
-                @Override
-                public int compare(CardModel c1, CardModel c2) {
-                    return c1.getName().get(LANGUAGE)
-                            .compareToIgnoreCase(c2.getName().get(LANGUAGE));
-                }
-            });
+//            Collections.sort(cardModelList, new Comparator<CardModel>() {
+//                @Override
+//                public int compare(CardModel c1, CardModel c2) {
+//                    return c1.getName().get(LANGUAGE)
+//                            .compareToIgnoreCase(c2.getName().get(LANGUAGE));
+//                }
+//            });
 
             return cardModelList;
         }

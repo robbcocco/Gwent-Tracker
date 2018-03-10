@@ -6,6 +6,7 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,55 @@ public class CardModel {
         this.info_raw = info_raw;
         this.strength = strength;
         this.faction_id = faction_id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CardModel cardModel = (CardModel) o;
+
+        if (id != cardModel.id) return false;
+        if (strength != cardModel.strength) return false;
+        if (faction_id != cardModel.faction_id) return false;
+        if (tag != null ? !tag.equals(cardModel.tag) : cardModel.tag != null) return false;
+        if (name != null ? !name.equals(cardModel.name) : cardModel.name != null) return false;
+        if (flavor != null ? !flavor.equals(cardModel.flavor) : cardModel.flavor != null)
+            return false;
+        if (info != null ? !info.equals(cardModel.info) : cardModel.info != null) return false;
+        if (info_raw != null ? !info_raw.equals(cardModel.info_raw) : cardModel.info_raw != null)
+            return false;
+        if (factionModel != null ? !factionModel.equals(cardModel.factionModel) : cardModel.factionModel != null)
+            return false;
+        if (variationModelList != null ? !variationModelList.equals(cardModel.variationModelList) : cardModel.variationModelList != null)
+            return false;
+        if (categoryModelList != null ? !categoryModelList.equals(cardModel.categoryModelList) : cardModel.categoryModelList != null)
+            return false;
+        if (keywordModelList != null ? !keywordModelList.equals(cardModel.keywordModelList) : cardModel.keywordModelList != null)
+            return false;
+        if (loyaltyModelList != null ? !loyaltyModelList.equals(cardModel.loyaltyModelList) : cardModel.loyaltyModelList != null)
+            return false;
+        return relatedCardModelList != null ? relatedCardModelList.equals(cardModel.relatedCardModelList) : cardModel.relatedCardModelList == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (flavor != null ? flavor.hashCode() : 0);
+        result = 31 * result + (info != null ? info.hashCode() : 0);
+        result = 31 * result + (info_raw != null ? info_raw.hashCode() : 0);
+        result = 31 * result + strength;
+        result = 31 * result + faction_id;
+        result = 31 * result + (factionModel != null ? factionModel.hashCode() : 0);
+        result = 31 * result + (variationModelList != null ? variationModelList.hashCode() : 0);
+        result = 31 * result + (categoryModelList != null ? categoryModelList.hashCode() : 0);
+        result = 31 * result + (keywordModelList != null ? keywordModelList.hashCode() : 0);
+        result = 31 * result + (loyaltyModelList != null ? loyaltyModelList.hashCode() : 0);
+        result = 31 * result + (relatedCardModelList != null ? relatedCardModelList.hashCode() : 0);
+        return result;
     }
 
     public String getTag() {
