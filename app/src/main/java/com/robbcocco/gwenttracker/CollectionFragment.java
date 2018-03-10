@@ -282,7 +282,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
         private final CollectionAdapter collectionAdapter;
 
-        public GetCardListTask(CollectionAdapter collectionAdapter) {
+        GetCardListTask(CollectionAdapter collectionAdapter) {
             this.collectionAdapter = collectionAdapter;
         }
 
@@ -309,14 +309,14 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
 
-    public class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
+    public static class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
 
         private final CollectionAdapter collectionAdapter;
 
         private final int cardId;
         private final int position;
 
-        public GetCardDetailTask(CollectionAdapter collectionAdapter, int cardId, int position) {
+        GetCardDetailTask(CollectionAdapter collectionAdapter, int cardId, int position) {
             this.collectionAdapter = collectionAdapter;
             this.cardId = cardId;
             this.position = position;
