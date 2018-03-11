@@ -26,7 +26,7 @@ public interface FactionDao {
     int getIdByTag(String tag);
 
     @Query("SELECT * FROM factions")
-    LiveData<List<FactionModel>> loadAllFactions();
+    List<FactionModel> loadAllFactions();
 
     @Query("SELECT * FROM factions WHERE factionid = :factionId LIMIT 1")
     LiveData<FactionModel> findFactionById(int factionId);

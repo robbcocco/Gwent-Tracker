@@ -85,7 +85,7 @@
                                         android:gravity="start"
                                         android:textSize="12sp"
                                         android:fontFamily="sans-serif-smallcaps"
-                                        android:textStyle="normal"
+                                        android:textStyle="bold"
                                         android:text="@string/card_str"/>
                                     <TextView
                                         android:id="@+id/card_detail_set"
@@ -122,7 +122,7 @@
                                         android:gravity="start"
                                         android:textSize="12sp"
                                         android:fontFamily="sans-serif-smallcaps"
-                                        android:textStyle="normal"
+                                        android:textStyle="bold"
                                         android:text="@string/card_faction"/>
                                     <TextView
                                         android:id="@+id/card_detail_faction"
@@ -159,7 +159,7 @@
                                         android:gravity="start"
                                         android:textSize="12sp"
                                         android:fontFamily="sans-serif-smallcaps"
-                                        android:textStyle="normal"
+                                        android:textStyle="bold"
                                         android:text="@string/card_rarity"/>
                                     <TextView
                                         android:id="@+id/card_detail_rarity"
@@ -238,7 +238,7 @@
                         android:gravity="start"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-smallcaps"
-                        android:textStyle="normal"
+                        android:textStyle="bold"
                         android:text="@string/card_info"/>
                     <TextView
                         android:id="@+id/card_detail_info"
@@ -276,7 +276,7 @@
                         android:gravity="start"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-smallcaps"
-                        android:textStyle="normal"
+                        android:textStyle="bold"
                         android:text="@string/card_categories"/>
                     <TextView
                         android:id="@+id/card_detail_categories"
@@ -314,7 +314,7 @@
                         android:gravity="start"
                         android:textSize="12sp"
                         android:fontFamily="sans-serif-smallcaps"
-                        android:textStyle="normal"
+                        android:textStyle="bold"
                         android:text="@string/card_related"/>
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/card_detail_related_list"
