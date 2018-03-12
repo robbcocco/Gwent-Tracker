@@ -66,6 +66,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private List<RarityModel> rarityModelList;
     private List<Integer> rarityIds = new ArrayList<>();
     private String searchQuery="";
+    private Boolean filtersVisible=false;
 
     private CollectionAdapter collectionViewAdapter;
     private RecyclerView collectionRecyclerView;
@@ -143,25 +144,34 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
 
-//        TabItem fragmentTabItem = getActivity().findViewById(R.id.tabItem);
-//        fragmentTabItem.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                collectionRecyclerView.scrollToPosition(0);
-//            }
-//        });
-
-        collectionRecyclerView = (RecyclerView) rootView.findViewById(R.id.collection_list);
-        collectionViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
-        collectionRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        collectionRecyclerView.setAdapter(collectionViewAdapter);
-
         setupFiltersView();
+
+        setupCollectionView(rootView);
 
         executeAsyncTasks();
 
         return rootView;
+    }
+
+    public void setupCollectionView(View view) {
+        collectionRecyclerView = (RecyclerView) view.findViewById(R.id.collection_list);
+        collectionViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
+        collectionRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        collectionRecyclerView.setAdapter(collectionViewAdapter);
+
+        collectionRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if(dy < 0 && !filtersVisible) {
+                    fab.show();
+                }
+                else {
+                    fab.hide();
+                }
+
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     public void executeAsyncTasks() {
@@ -222,6 +232,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void revealFilters() {
+        filtersVisible = true;
+
         int fabMargin = (int) getResources().getDimension(R.dimen.fab_margin);
         int filterscx = filters.getWidth() - (fab.getWidth()/2 + fabMargin);
         int filterscy = filters.getHeight() - (fab.getHeight()/2 + fabMargin);
@@ -241,6 +253,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void hideFilters() {
+        filtersVisible = false;
+
         int fabMargin = (int) getResources().getDimension(R.dimen.fab_margin);
         int filterscx = filters.getWidth() - (fab.getWidth()/2 + fabMargin);
         int filterscy = filters.getHeight() - (fab.getHeight()/2 + fabMargin);

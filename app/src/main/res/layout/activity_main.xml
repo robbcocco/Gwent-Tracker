@@ -144,6 +144,7 @@
                 android:layout_margin="@dimen/fab_margin"
                 android:stateListAnimator="@null"
                 app:srcCompat="@drawable/ic_close_24dp"
+                app:borderWidth="0dp"
                 app:elevation="0dp"/>
             <Button
                 android:id="@+id/filters_reset"
