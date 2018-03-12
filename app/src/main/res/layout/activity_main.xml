@@ -96,28 +96,44 @@
             android:layout_height="wrap_content"
             android:scrollbars="horizontal">
         </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="0dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:gravity="start"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textStyle="bold"
+            android:text="@string/card_categories"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/filter_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal">
+        </android.support.v7.widget.RecyclerView>
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:paddingBottom="0dp">
+            android:layout_height="wrap_content">
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/filters_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
                 android:layout_margin="@dimen/fab_margin"
+                android:stateListAnimator="@null"
                 app:srcCompat="@drawable/ic_close_24dp"
                 app:elevation="0dp"/>
             <Button
                 android:id="@+id/filters_reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start|bottom"
-                android:layout_margin="12dp"
+                android:layout_gravity="center_vertical"
                 android:textColor="@android:color/white"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textStyle="normal"
                 android:textAllCaps="true"
                 android:text="@string/filters_reset"

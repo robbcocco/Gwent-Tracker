@@ -77,16 +77,16 @@ public abstract class CardDatabase extends RoomDatabase {
                 .addMigrations()
                 .fallbackToDestructiveMigration()
                 .build();
-        new populateDatabaseAsyncTask(mDb).execute(context);
+        new PopulateDatabaseAsyncTask(mDb).execute(context);
 
         return mDb;
     }
 
-    private static class populateDatabaseAsyncTask extends AsyncTask<Context, Void, Void> {
+    private static class PopulateDatabaseAsyncTask extends AsyncTask<Context, Void, Void> {
 
         private CardDatabase mDb;
 
-        populateDatabaseAsyncTask(CardDatabase cardDatabase) {
+        PopulateDatabaseAsyncTask(CardDatabase cardDatabase) {
             mDb = cardDatabase;
         }
 

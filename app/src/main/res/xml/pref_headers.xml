@@ -4,7 +4,7 @@
 
     <header
         android:fragment="com.robbcocco.gwenttracker.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_24dp"
+        android:icon="@drawable/ic_settings_24dp"
         android:title="@string/pref_header_general" />
 
 </preference-headers>

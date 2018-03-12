@@ -55,10 +55,12 @@ public class CardDetailFragment extends Fragment {
     private ImageView artView;
     private TextView strView;
     private TextView factionView;
+    private LinearLayout rarityViewParent;
     private TextView rarityView;
     private TextView flavorView;
     private LinearLayout categoriesViewParent;
     private TextView categoriesView;
+    private LinearLayout infoViewParent;
     private TextView infoView;
 
     private LinearLayout relatedTitleView;
@@ -113,11 +115,13 @@ public class CardDetailFragment extends Fragment {
         factionArtView = (ImageView) view.findViewById(R.id.card_detail_faction_art);
         artView = (ImageView) view.findViewById(R.id.card_detail_art);
         factionView = (TextView) view.findViewById(R.id.card_detail_faction);
+        rarityViewParent = (LinearLayout) view.findViewById(R.id.card_detail_rarity_parent);
         rarityView = (TextView) view.findViewById(R.id.card_detail_rarity);
         strView = (TextView) view.findViewById(R.id.card_detail_set);
         categoriesViewParent = (LinearLayout) view.findViewById(R.id.card_detail_categories_parent);
         categoriesView = (TextView) view.findViewById(R.id.card_detail_categories);
         flavorView = (TextView) view.findViewById(R.id.card_detail_flavor);
+        infoViewParent = (LinearLayout) view.findViewById(R.id.card_detail_info_parent);
         infoView = (TextView) view.findViewById(R.id.card_detail_info);
 
         relatedTitleView = (LinearLayout) view.findViewById(R.id.card_detail_related_parent);
@@ -180,7 +184,7 @@ public class CardDetailFragment extends Fragment {
 
             if (cardModel.getVariationModelList().get(0).getRarityModel() != null) {
                 rarityView.setText(cardModel.getVariationModelList().get(0).getRarityModel().getName());
-                rarityView.setOnClickListener(new View.OnClickListener() {
+                rarityViewParent.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         AlertDialog.Builder builder = new AlertDialog
@@ -204,7 +208,7 @@ public class CardDetailFragment extends Fragment {
 
             infoView.setText(cardModel.getInfo().get(LANGUAGE));
             if (!cardModel.getKeywordModelList().isEmpty()) {
-                infoView.setOnClickListener(new View.OnClickListener() {
+                infoViewParent.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         AlertDialog.Builder builder = new AlertDialog

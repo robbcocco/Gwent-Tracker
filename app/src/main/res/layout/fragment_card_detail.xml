@@ -146,6 +146,7 @@
                                 app:contentPaddingLeft="2dp"
                                 app:cardCornerRadius="0dp">
                                 <LinearLayout
+                                    android:id="@+id/card_detail_rarity_parent"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
@@ -155,6 +156,7 @@
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
+                                        android:drawableEnd="@drawable/ic_info_outline_24dp"
                                         android:padding="4dp"
                                         android:gravity="start"
                                         android:textSize="12sp"
@@ -234,6 +236,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_info_outline_24dp"
                         android:padding="8dp"
                         android:gravity="start"
                         android:textSize="12sp"

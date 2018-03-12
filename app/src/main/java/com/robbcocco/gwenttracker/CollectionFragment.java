@@ -6,7 +6,6 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,10 +31,12 @@ import android.widget.TextView;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
+import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
 import com.robbcocco.gwenttracker.database.helper.CardHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -54,7 +55,12 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private FactionListAdapter factionListAdapter;
     private RecyclerView factionListRecyclerView;
     private List<FactionModel> factionModelList;
-    private List<Integer> factionsId=new ArrayList<>();
+    private List<Integer> factionIds = new ArrayList<>();
+    private CategoryListAdapter categoryListAdapter;
+    private RecyclerView categoryListRecyclerView;
+    private List<CategoryModel> categoryModelList;
+    private List<Integer> categoryIds = new ArrayList<>();
+    private String searchQuery="";
 
     private CollectionAdapter collectionViewAdapter;
     private RecyclerView collectionRecyclerView;
@@ -156,6 +162,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     public void executeAsyncTasks() {
         new GetCardListTask(collectionViewAdapter).execute(getActivity().getApplicationContext());
         new GetFactionListTask(factionListAdapter).execute(getActivity().getApplicationContext());
+        new GetCategoryListTask(categoryListAdapter).execute(getActivity().getApplicationContext());
     }
 
     private void setupFiltersView() {
@@ -168,6 +175,11 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         factionListAdapter = new FactionListAdapter(new ArrayList<FactionModel>());
         factionListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         factionListRecyclerView.setAdapter(factionListAdapter);
+
+        categoryListRecyclerView = (RecyclerView) getActivity().findViewById(R.id.filter_categories);
+        categoryListAdapter = new CategoryListAdapter(new ArrayList<CategoryModel>());
+        categoryListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        categoryListRecyclerView.setAdapter(categoryListAdapter);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,12 +198,11 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             @Override
             public void onClick(View v) {
                 hideFilters();
-                factionsId=new ArrayList<>();
+                factionIds = new ArrayList<>();
                 factionListAdapter.notifyDataSetChanged();
-                final List<CardModel> filteredModelList = filter(cardModelList, factionsId);
-
-                collectionViewAdapter.replaceAll(filteredModelList);
-                collectionRecyclerView.scrollToPosition(0);
+                categoryIds = new ArrayList<>();
+                categoryListAdapter.notifyDataSetChanged();
+                filter();
 
             }
         });
@@ -254,15 +265,19 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
     @Override
     public boolean onQueryTextChange(String query) {
-        final List<CardModel> filteredModelList = filter(filter(cardModelList, query), factionsId);
-        collectionViewAdapter.replaceAll(filteredModelList);
-        collectionRecyclerView.scrollToPosition(0);
+        searchQuery=query;
+        filter();
         return true;
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
+    }
+
+    private void filter() {
+        collectionViewAdapter.replaceAll(filter(filter(cardModelList, factionIds, categoryIds), searchQuery));
+        collectionRecyclerView.scrollToPosition(0);
     }
 
     private static List<CardModel> filter(List<CardModel> models, String query) {
@@ -278,17 +293,40 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         return filteredModelList;
     }
 
-    private static List<CardModel> filter(List<CardModel> models, List<Integer> factionsId) {
-        final List<CardModel> filteredModelList = new ArrayList<>();
-        if (factionsId.isEmpty()) {
-            return models;
-        }
-        for (CardModel model : models) {
-            if (factionsId.contains(model.getFaction_id())) {
-                filteredModelList.add(model);
+    private static List<CardModel> filter(List<CardModel> models, List<Integer> factionsId, List<Integer> categoryIds) {
+        final List<CardModel> cardsByFaction = new ArrayList<>();
+        if (!factionsId.isEmpty()) {
+            for (CardModel model : models) {
+                if (factionsId.contains(model.getFaction_id())) {
+                    cardsByFaction.add(model);
+                }
             }
         }
-        return filteredModelList;
+        else {
+            cardsByFaction.addAll(models);
+        }
+
+        final List<CardModel> cardsByCategory = new ArrayList<>();
+        if (!categoryIds.isEmpty()) {
+            for (CardModel model : cardsByFaction) {
+                Boolean hasCategory = false;
+                if (model.getCategoryModelList() != null) {
+                    for (CategoryModel categoryModel : model.getCategoryModelList()) {
+                        if (categoryIds.contains(categoryModel.id)) {
+                            hasCategory = true;
+                        }
+                    }
+                }
+                if (hasCategory) {
+                    cardsByCategory.add(model);
+                }
+            }
+        }
+        else {
+            cardsByCategory.addAll(cardsByFaction);
+        }
+
+        return cardsByCategory;
     }
 
 
@@ -404,28 +442,28 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     /**
      * Filter lists classes
      */
-    public class FactionListAdapter extends RecyclerView.Adapter<FilterListViewHolder> {
+    public class FactionListAdapter extends RecyclerView.Adapter<FactionListViewHolder> {
 
         public FactionListAdapter(List<FactionModel> models) {
             factionModelList = models;
         }
 
         @Override
-        public FilterListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new FilterListViewHolder(LayoutInflater.from(parent.getContext())
+        public FactionListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new FactionListViewHolder(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.filter_button, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(FilterListViewHolder holder, int position) {
+        public void onBindViewHolder(FactionListViewHolder holder, int position) {
             FactionModel model = factionModelList.get(position);
 
             holder.button.setText(model.getName().get(LANGUAGE));
-            if (factionsId.isEmpty() || !factionsId.contains(model.id)) {
-                holder.button.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+            if (factionIds.isEmpty() || !factionIds.contains(model.id)) {
+                holder.button.setSelected(false);
             }
             else {
-                holder.button.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentDark)));
+                holder.button.setSelected(true);
             }
 
             holder.itemView.setTag(model);
@@ -442,11 +480,11 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         }
     }
 
-    private class FilterListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class FactionListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int id;
         private Button button;
 
-        FilterListViewHolder(View view) {
+        FactionListViewHolder(View view) {
             super(view);
 
             button = (Button) view.findViewById(R.id.filter_button);
@@ -457,18 +495,80 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         @Override
         public void onClick(View view) {
             id = factionModelList.get(getAdapterPosition()).id;
-            if (factionsId.contains(id)) {
-                button.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-                factionsId.remove((Object) id);
+            if (factionIds.contains(id)) {
+                factionIds.remove((Object) id);
+                button.setSelected(false);
             }
             else {
-                button.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentDark)));
-                factionsId.add(id);
+                factionIds.add(id);
+                button.setSelected(true);
             }
-            final List<CardModel> filteredModelList = filter(cardModelList, factionsId);
+            filter();
+        }
+    }
 
-            collectionViewAdapter.replaceAll(filteredModelList);
-            collectionRecyclerView.scrollToPosition(0);
+    public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListViewHolder> {
+
+        public CategoryListAdapter(List<CategoryModel> models) {
+            categoryModelList = models;
+        }
+
+        @Override
+        public CategoryListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new CategoryListViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.filter_button, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(CategoryListViewHolder holder, int position) {
+            CategoryModel model = categoryModelList.get(position);
+
+            holder.button.setText(model.getName().get(LANGUAGE));
+            if (categoryIds.isEmpty() || !categoryIds.contains(model.id)) {
+                holder.button.setSelected(false);
+            }
+            else {
+                holder.button.setSelected(true);
+            }
+
+            holder.itemView.setTag(model);
+        }
+
+        @Override
+        public int getItemCount() {
+            return categoryModelList.size();
+        }
+
+        public void updateModelList(List<CategoryModel> models) {
+            categoryModelList = models;
+            notifyDataSetChanged();
+        }
+    }
+
+    private class CategoryListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private int id;
+        private Button button;
+
+        CategoryListViewHolder(View view) {
+            super(view);
+
+            button = (Button) view.findViewById(R.id.filter_button);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            id = categoryModelList.get(getAdapterPosition()).id;
+            if (categoryIds.contains(id)) {
+                categoryIds.remove((Object) id);
+                button.setSelected(false);
+            }
+            else {
+                categoryIds.add(id);
+                button.setSelected(true);
+            }
+            filter();
         }
     }
 
@@ -542,6 +642,35 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
         @Override
         protected void onPostExecute(List<FactionModel> result) {
+            adapter.updateModelList(result);
+        }
+    }
+
+    public static class GetCategoryListTask extends AsyncTask<Context, Void, List<CategoryModel>> {
+
+        private final CategoryListAdapter adapter;
+
+        GetCategoryListTask(CategoryListAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected List<CategoryModel> doInBackground(Context... context) {
+            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
+            List<CategoryModel> modelList = mDb.categoryDao().loadAllCategories();
+
+            Collections.sort(modelList, new Comparator<CategoryModel>() {
+                @Override
+                public int compare(CategoryModel o1, CategoryModel o2) {
+                    return o1.getName().get(LANGUAGE).compareToIgnoreCase(o2.getName().get(LANGUAGE));
+                }
+            });
+
+            return modelList;
+        }
+
+        @Override
+        protected void onPostExecute(List<CategoryModel> result) {
             adapter.updateModelList(result);
         }
     }

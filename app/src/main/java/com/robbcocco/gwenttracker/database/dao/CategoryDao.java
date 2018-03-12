@@ -25,8 +25,8 @@ public interface CategoryDao {
     @Query("SELECT categoryid FROM categories WHERE category_tag IS :tag LIMIT 1")
     int getIdByTag(String tag);
 
-    @Query("SELECT * FROM categories")
-    LiveData<List<CategoryModel>> loadAllCategories();
+    @Query("SELECT DISTINCT categories.* FROM categories INNER JOIN card_categories ON card_categories.category_id = categories.categoryid")
+    List<CategoryModel> loadAllCategories();
 
     @Query("SELECT * FROM categories INNER JOIN card_categories ON categories.categoryid = card_categories.category_id WHERE card_categories.card_id = :cardId")
     LiveData<List<CategoryModel>> getCategoriesByCardId(int cardId);
