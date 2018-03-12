@@ -162,7 +162,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         collectionRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if(dy < 0 && !filtersVisible) {
+                if(dy <= 0 && !filtersVisible) {
                     fab.show();
                 }
                 else {
