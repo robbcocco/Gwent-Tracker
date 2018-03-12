@@ -77,7 +77,7 @@ public abstract class CardDatabase extends RoomDatabase {
                 .addMigrations()
                 .fallbackToDestructiveMigration()
                 .build();
-        new PopulateDatabaseAsyncTask(mDb).execute(context);
+//        new PopulateDatabaseAsyncTask(mDb).execute(context);
 
         return mDb;
     }

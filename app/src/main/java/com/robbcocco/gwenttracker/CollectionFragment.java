@@ -213,6 +213,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 factionListAdapter.notifyDataSetChanged();
                 categoryIds = new ArrayList<>();
                 categoryListAdapter.notifyDataSetChanged();
+                rarityIds = new ArrayList<>();
+                rarityListAdapter.notifyDataSetChanged();
                 filter();
 
             }
@@ -458,9 +460,12 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         @Override
         public void onClick(View view) {
             cardId = mSortedList.get(getAdapterPosition()).id;
-            Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
-            startActivity(intent,
-                    ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+
+            if (mSortedList.get(getAdapterPosition()).getFactionModel() != null) {
+                Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
+                startActivity(intent,
+                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+            }
         }
     }
 
