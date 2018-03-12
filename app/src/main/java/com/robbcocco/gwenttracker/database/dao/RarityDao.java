@@ -25,8 +25,8 @@ public interface RarityDao {
     @Query("SELECT rarityid FROM rarities WHERE rarity_name LIKE :name LIMIT 1")
     int getIdByName(String name);
 
-    @Query("SELECT * FROM rarities")
-    LiveData<List<RarityModel>> loadAllRarities();
+    @Query("SELECT DISTINCT rarities.* FROM rarities INNER JOIN variations WHERE variations.rarity_id = rarities.rarityid")
+    List<RarityModel> loadAllRarities();
 
     @Query("SELECT * FROM rarities WHERE rarityid = :rarityId LIMIT 1")
     LiveData<RarityModel> findRarityById(int rarityId);

@@ -114,6 +114,24 @@
             android:layout_height="wrap_content"
             android:scrollbars="horizontal">
         </android.support.v7.widget.RecyclerView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="0dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:gravity="start"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textStyle="bold"
+            android:text="@string/card_rarity"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/filter_rarities"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal">
+        </android.support.v7.widget.RecyclerView>
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"

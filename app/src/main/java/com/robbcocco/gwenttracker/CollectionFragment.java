@@ -33,6 +33,7 @@ import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
+import com.robbcocco.gwenttracker.database.entity.RarityModel;
 import com.robbcocco.gwenttracker.database.helper.CardHelper;
 
 import java.util.ArrayList;
@@ -60,6 +61,10 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private RecyclerView categoryListRecyclerView;
     private List<CategoryModel> categoryModelList;
     private List<Integer> categoryIds = new ArrayList<>();
+    private RarityListAdapter rarityListAdapter;
+    private RecyclerView rarityListRecyclerView;
+    private List<RarityModel> rarityModelList;
+    private List<Integer> rarityIds = new ArrayList<>();
     private String searchQuery="";
 
     private CollectionAdapter collectionViewAdapter;
@@ -163,6 +168,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         new GetCardListTask(collectionViewAdapter).execute(getActivity().getApplicationContext());
         new GetFactionListTask(factionListAdapter).execute(getActivity().getApplicationContext());
         new GetCategoryListTask(categoryListAdapter).execute(getActivity().getApplicationContext());
+        new GetRarityListTask(rarityListAdapter).execute(getActivity().getApplicationContext());
     }
 
     private void setupFiltersView() {
@@ -180,6 +186,11 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         categoryListAdapter = new CategoryListAdapter(new ArrayList<CategoryModel>());
         categoryListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         categoryListRecyclerView.setAdapter(categoryListAdapter);
+
+        rarityListRecyclerView = (RecyclerView) getActivity().findViewById(R.id.filter_rarities);
+        rarityListAdapter = new RarityListAdapter(new ArrayList<RarityModel>());
+        rarityListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        rarityListRecyclerView.setAdapter(rarityListAdapter);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -276,7 +287,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void filter() {
-        collectionViewAdapter.replaceAll(filter(filter(cardModelList, factionIds, categoryIds), searchQuery));
+        collectionViewAdapter.replaceAll(filter(filter(cardModelList, factionIds, categoryIds, rarityIds), searchQuery));
         collectionRecyclerView.scrollToPosition(0);
     }
 
@@ -293,7 +304,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         return filteredModelList;
     }
 
-    private static List<CardModel> filter(List<CardModel> models, List<Integer> factionsId, List<Integer> categoryIds) {
+    private static List<CardModel> filter(List<CardModel> models, List<Integer> factionsId, List<Integer> categoryIds, List<Integer> rarityIds) {
         final List<CardModel> cardsByFaction = new ArrayList<>();
         if (!factionsId.isEmpty()) {
             for (CardModel model : models) {
@@ -326,7 +337,21 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             cardsByCategory.addAll(cardsByFaction);
         }
 
-        return cardsByCategory;
+        final List<CardModel> cardsByRarity = new ArrayList<>();
+        if (!rarityIds.isEmpty()) {
+            for (CardModel model : cardsByCategory) {
+                if (model.getVariationModelList() != null && !model.getVariationModelList().isEmpty()) {
+                    if (rarityIds.contains(model.getVariationModelList().get(0).getRarity_id())) {
+                        cardsByRarity.add(model);
+                    }
+                }
+            }
+        }
+        else {
+            cardsByRarity.addAll(cardsByCategory);
+        }
+
+        return cardsByRarity;
     }
 
 
@@ -572,6 +597,71 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         }
     }
 
+    public class RarityListAdapter extends RecyclerView.Adapter<RarityListViewHolder> {
+
+        public RarityListAdapter(List<RarityModel> models) {
+            rarityModelList = models;
+        }
+
+        @Override
+        public RarityListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new RarityListViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.filter_button, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(RarityListViewHolder holder, int position) {
+            RarityModel model = rarityModelList.get(position);
+
+            holder.button.setText(model.getName());
+            if (rarityIds.isEmpty() || !rarityIds.contains(model.id)) {
+                holder.button.setSelected(false);
+            }
+            else {
+                holder.button.setSelected(true);
+            }
+
+            holder.itemView.setTag(model);
+        }
+
+        @Override
+        public int getItemCount() {
+            return rarityModelList.size();
+        }
+
+        public void updateModelList(List<RarityModel> models) {
+            rarityModelList = models;
+            notifyDataSetChanged();
+        }
+    }
+
+    private class RarityListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private int id;
+        private Button button;
+
+        RarityListViewHolder(View view) {
+            super(view);
+
+            button = (Button) view.findViewById(R.id.filter_button);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            id = rarityModelList.get(getAdapterPosition()).id;
+            if (rarityIds.contains(id)) {
+                rarityIds.remove((Object) id);
+                button.setSelected(false);
+            }
+            else {
+                rarityIds.add(id);
+                button.setSelected(true);
+            }
+            filter();
+        }
+    }
+
     /**
      * Async tasks
      */
@@ -671,6 +761,35 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
         @Override
         protected void onPostExecute(List<CategoryModel> result) {
+            adapter.updateModelList(result);
+        }
+    }
+
+    public static class GetRarityListTask extends AsyncTask<Context, Void, List<RarityModel>> {
+
+        private final RarityListAdapter adapter;
+
+        GetRarityListTask(RarityListAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected List<RarityModel> doInBackground(Context... context) {
+            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
+            List<RarityModel> modelList = mDb.rarityDao().loadAllRarities();
+
+            Collections.sort(modelList, new Comparator<RarityModel>() {
+                @Override
+                public int compare(RarityModel o1, RarityModel o2) {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }
+            });
+
+            return modelList;
+        }
+
+        @Override
+        protected void onPostExecute(List<RarityModel> result) {
             adapter.updateModelList(result);
         }
     }
