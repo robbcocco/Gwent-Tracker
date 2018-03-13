@@ -17,6 +17,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +49,8 @@ import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
  */
 
 public class CollectionFragment extends Fragment implements SearchView.OnQueryTextListener {
+    private String TAG = "CollectionFragment";
+
     private SharedPreferences sharedPreferences;
     private static String LANGUAGE="en-US";
 
@@ -154,7 +157,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     public void setupCollectionView(View view) {
-        collectionRecyclerView = (RecyclerView) view.findViewById(R.id.collection_list);
+        collectionRecyclerView = view.findViewById(R.id.collection_list);
         collectionViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
         collectionRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         collectionRecyclerView.setAdapter(collectionViewAdapter);
@@ -162,7 +165,15 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         collectionRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if(dy <= 0 && !filtersVisible) {
+                if (dy == 0) {
+                    if (!filtersVisible) {
+                        fab.show();
+                    }
+                }
+                else if(dy < 0) {
+                    if (filtersVisible) {
+                        hideFilters();
+                    }
                     fab.show();
                 }
                 else {
@@ -185,22 +196,22 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void setupFiltersView() {
-        filters = (LinearLayout) getActivity().findViewById(R.id.filters);
-        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        filters = getActivity().findViewById(R.id.filters);
+        fab = getActivity().findViewById(R.id.fab);
         FloatingActionButton close = getActivity().findViewById(R.id.filters_close);
         Button reset = getActivity().findViewById(R.id.filters_reset);
 
-        factionListRecyclerView = (RecyclerView) getActivity().findViewById(R.id.filter_factions);
+        factionListRecyclerView = getActivity().findViewById(R.id.filter_factions);
         factionListAdapter = new FactionListAdapter(new ArrayList<FactionModel>());
         factionListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         factionListRecyclerView.setAdapter(factionListAdapter);
 
-        categoryListRecyclerView = (RecyclerView) getActivity().findViewById(R.id.filter_categories);
+        categoryListRecyclerView = getActivity().findViewById(R.id.filter_categories);
         categoryListAdapter = new CategoryListAdapter(new ArrayList<CategoryModel>());
         categoryListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         categoryListRecyclerView.setAdapter(categoryListAdapter);
 
-        rarityListRecyclerView = (RecyclerView) getActivity().findViewById(R.id.filter_rarities);
+        rarityListRecyclerView = getActivity().findViewById(R.id.filter_rarities);
         rarityListAdapter = new RarityListAdapter(new ArrayList<RarityModel>());
         rarityListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         rarityListRecyclerView.setAdapter(rarityListAdapter);
@@ -470,8 +481,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             super(view);
             itemView.setOnClickListener(this);
 
-            cardArt = (ImageView) view.findViewById(R.id.collection_card_art);
-            cardName = (TextView) view.findViewById(R.id.collection_card_name);
+            cardArt = view.findViewById(R.id.collection_card_art);
+            cardName = view.findViewById(R.id.collection_card_name);
         }
 
         @Override
@@ -534,7 +545,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         FactionListViewHolder(View view) {
             super(view);
 
-            button = (Button) view.findViewById(R.id.filter_button);
+            button = view.findViewById(R.id.filter_button);
 
             itemView.setOnClickListener(this);
         }
@@ -599,7 +610,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         CategoryListViewHolder(View view) {
             super(view);
 
-            button = (Button) view.findViewById(R.id.filter_button);
+            button = view.findViewById(R.id.filter_button);
 
             itemView.setOnClickListener(this);
         }
@@ -664,7 +675,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         RarityListViewHolder(View view) {
             super(view);
 
-            button = (Button) view.findViewById(R.id.filter_button);
+            button = view.findViewById(R.id.filter_button);
 
             itemView.setOnClickListener(this);
         }
