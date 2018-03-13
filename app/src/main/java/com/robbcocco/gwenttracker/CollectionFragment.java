@@ -166,6 +166,9 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                     fab.show();
                 }
                 else {
+                    if (filtersVisible) {
+                        hideFilters();
+                    }
                     fab.hide();
                 }
 
