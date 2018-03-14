@@ -36,6 +36,13 @@ import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
 import com.robbcocco.gwenttracker.database.entity.RarityModel;
 import com.robbcocco.gwenttracker.database.helper.CardHelper;
+import com.robbcocco.gwenttracker.tasks.GetCardDetailInterface;
+import com.robbcocco.gwenttracker.tasks.GetCardDetailTask;
+import com.robbcocco.gwenttracker.tasks.GetDBCardListTask;
+import com.robbcocco.gwenttracker.tasks.GetDBCategoryListTask;
+import com.robbcocco.gwenttracker.tasks.GetDBFactionListTask;
+import com.robbcocco.gwenttracker.tasks.GetDBListInterface;
+import com.robbcocco.gwenttracker.tasks.GetDBRarityListTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +60,12 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
     private SharedPreferences sharedPreferences;
     private static String LANGUAGE="en-US";
+
+    private GetDBCardListTask getDBCardListTask;
+//    private GetCardDetailTask getCardDetailTask;
+    private GetDBFactionListTask getDBFactionListTask;
+    private GetDBCategoryListTask getDBCategoryListTask;
+    private GetDBRarityListTask getDBRarityListTask;
 
     private LinearLayout filters;
     private FloatingActionButton fab;
@@ -156,6 +169,16 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         return rootView;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getDBCardListTask.cancel(true);
+//        getCardDetailTask.cancel(true);
+        getDBFactionListTask.cancel(true);
+        getDBCategoryListTask.cancel(true);
+        getDBRarityListTask.cancel(true);
+    }
+
     public void setupCollectionView(View view) {
         collectionRecyclerView = view.findViewById(R.id.collection_list);
         collectionViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
@@ -189,10 +212,53 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     public void executeAsyncTasks() {
-        new GetCardListTask(collectionViewAdapter).execute(getActivity().getApplicationContext());
-        new GetFactionListTask(factionListAdapter).execute(getActivity().getApplicationContext());
-        new GetCategoryListTask(categoryListAdapter).execute(getActivity().getApplicationContext());
-        new GetRarityListTask(rarityListAdapter).execute(getActivity().getApplicationContext());
+        GetDBListInterface getDBListInterface = new GetDBListInterface() {
+            @Override
+            public void updateAdapter(List result) {
+                collectionViewAdapter.updateCardModelList(result);
+            }
+        };
+        getDBCardListTask = new GetDBCardListTask(getDBListInterface);
+        getDBCardListTask.execute(getActivity());
+
+        getDBListInterface = new GetDBListInterface() {
+            @Override
+            public void updateAdapter(List result) {
+                factionListAdapter.updateModelList(result);
+            }
+        };
+        getDBFactionListTask = new GetDBFactionListTask(getDBListInterface);
+        getDBFactionListTask.execute(getActivity());
+
+        getDBListInterface = new GetDBListInterface() {
+            @Override
+            public void updateAdapter(List result) {
+                Collections.sort(result, new Comparator<CategoryModel>() {
+                    @Override
+                    public int compare(CategoryModel o1, CategoryModel o2) {
+                        return o1.getName().get(LANGUAGE).compareToIgnoreCase(o2.getName().get(LANGUAGE));
+                    }
+                });
+                categoryListAdapter.updateModelList(result);
+            }
+        };
+        getDBCategoryListTask = new GetDBCategoryListTask(getDBListInterface);
+        getDBCategoryListTask.execute(getActivity());
+
+        getDBListInterface = new GetDBListInterface() {
+            @Override
+            public void updateAdapter(List result) {
+                Collections.sort(result, new Comparator<RarityModel>() {
+                    @Override
+                    public int compare(RarityModel o1, RarityModel o2) {
+                        return ((Integer) o1.getStandard()).compareTo((Integer) o2.getStandard());
+                    }
+                });
+                rarityListAdapter.updateModelList(result);
+            }
+        };
+        getDBRarityListTask = new GetDBRarityListTask(getDBListInterface);
+        getDBRarityListTask.execute(getActivity());
     }
 
     private void setupFiltersView() {
@@ -428,16 +494,24 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             cardModelList = cardModels;
             add(cardModels);
 
-            for (CardModel cardModel : cardModelList) {
-                new GetCardDetailTask(collectionViewAdapter, cardModel.id, cardModelList.indexOf(cardModel))
-                        .execute(getActivity().getApplicationContext());
-            }
+//            GetCardDetailInterface getCardDetailInterface;
+//
+//            for (final CardModel cardModel : cardModelList) {
+//                getCardDetailInterface = new GetCardDetailInterface() {
+//                    @Override
+//                    public void updateAdapter(CardModel result) {
+//                        collectionViewAdapter.updateCardModelAtPosition(result, cardModelList.indexOf(cardModel));
+//                    }
+//                };
+//                getCardDetailTask = new GetCardDetailTask(getCardDetailInterface, cardModel.id);
+//                getCardDetailTask.execute(getActivity());
+//            }
         }
 
-        public void updateCardModelAtPosition(CardModel cardModel, int position) {
-            cardModelList.set(position, cardModel);
-            add(cardModel);
-        }
+//        public void updateCardModelAtPosition(CardModel cardModel, int position) {
+//            cardModelList.set(position, cardModel);
+//            add(cardModel);
+//        }
 
         public void add(CardModel model) {
             mSortedList.add(model);
@@ -692,138 +766,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 button.setSelected(true);
             }
             filter();
-        }
-    }
-
-    /**
-     * Async tasks
-     */
-    public static class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
-
-        private final CollectionAdapter collectionAdapter;
-
-        GetCardListTask(CollectionAdapter collectionAdapter) {
-            this.collectionAdapter = collectionAdapter;
-        }
-
-        @Override
-        protected List<CardModel> doInBackground(Context... context) {
-            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
-            List<CardModel> cardModelList = mDb.cardDao().loadAllCards();
-
-            return cardModelList;
-        }
-
-        @Override
-        protected void onPostExecute(List<CardModel> result) {
-            collectionAdapter.updateCardModelList(result);
-        }
-    }
-
-    public static class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
-
-        private final CollectionAdapter collectionAdapter;
-
-        private final int cardId;
-        private final int position;
-
-        GetCardDetailTask(CollectionAdapter collectionAdapter, int cardId, int position) {
-            this.collectionAdapter = collectionAdapter;
-            this.cardId = cardId;
-            this.position = position;
-        }
-
-        @Override
-        protected CardModel doInBackground(Context... context) {
-            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
-            CardHelper cardHelper = new CardHelper(mDb);
-
-            return cardHelper.findCardById(cardId);
-        }
-
-        @Override
-        protected void onPostExecute(CardModel result) {
-            collectionAdapter.updateCardModelAtPosition(result, position);
-        }
-    }
-
-    public static class GetFactionListTask extends AsyncTask<Context, Void, List<FactionModel>> {
-
-        private final FactionListAdapter adapter;
-
-        GetFactionListTask(FactionListAdapter adapter) {
-            this.adapter = adapter;
-        }
-
-        @Override
-        protected List<FactionModel> doInBackground(Context... context) {
-            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
-            List<FactionModel> modelList = mDb.factionDao().loadAllFactions();
-
-            return modelList;
-        }
-
-        @Override
-        protected void onPostExecute(List<FactionModel> result) {
-            adapter.updateModelList(result);
-        }
-    }
-
-    public static class GetCategoryListTask extends AsyncTask<Context, Void, List<CategoryModel>> {
-
-        private final CategoryListAdapter adapter;
-
-        GetCategoryListTask(CategoryListAdapter adapter) {
-            this.adapter = adapter;
-        }
-
-        @Override
-        protected List<CategoryModel> doInBackground(Context... context) {
-            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
-            List<CategoryModel> modelList = mDb.categoryDao().loadAllCategories();
-
-            Collections.sort(modelList, new Comparator<CategoryModel>() {
-                @Override
-                public int compare(CategoryModel o1, CategoryModel o2) {
-                    return o1.getName().get(LANGUAGE).compareToIgnoreCase(o2.getName().get(LANGUAGE));
-                }
-            });
-
-            return modelList;
-        }
-
-        @Override
-        protected void onPostExecute(List<CategoryModel> result) {
-            adapter.updateModelList(result);
-        }
-    }
-
-    public static class GetRarityListTask extends AsyncTask<Context, Void, List<RarityModel>> {
-
-        private final RarityListAdapter adapter;
-
-        GetRarityListTask(RarityListAdapter adapter) {
-            this.adapter = adapter;
-        }
-
-        @Override
-        protected List<RarityModel> doInBackground(Context... context) {
-            CardDatabase mDb = CardDatabase.getDatabase(context[0]);
-            List<RarityModel> modelList = mDb.rarityDao().loadAllRarities();
-
-            Collections.sort(modelList, new Comparator<RarityModel>() {
-                @Override
-                public int compare(RarityModel o1, RarityModel o2) {
-                    return o1.getName().compareToIgnoreCase(o2.getName());
-                }
-            });
-
-            return modelList;
-        }
-
-        @Override
-        protected void onPostExecute(List<RarityModel> result) {
-            adapter.updateModelList(result);
         }
     }
 }

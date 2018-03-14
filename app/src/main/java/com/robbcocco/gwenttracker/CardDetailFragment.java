@@ -1,14 +1,10 @@
 package com.robbcocco.gwenttracker;
 
 import android.app.ActivityOptions;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -24,9 +20,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
-import com.robbcocco.gwenttracker.database.helper.CardHelper;
+import com.robbcocco.gwenttracker.tasks.GetCardDetailTask;
+import com.robbcocco.gwenttracker.tasks.GetCardDetailInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +43,8 @@ public class CardDetailFragment extends Fragment {
 
     private SharedPreferences sharedPreferences;
     private static String LANGUAGE="en-US";
+
+    private GetCardDetailTask getCardDetailTask;
 
     private CardModel cardModel;
     private CollapsingToolbarLayout collapsingToolbar;
@@ -98,8 +96,15 @@ public class CardDetailFragment extends Fragment {
         if (getArguments() != null) {
             int cardId = getArguments().getInt(CARD_ID);
 
-            CardDatabase mDb = CardDatabase.getDatabase(getActivity().getApplication());
-            new GetCardDetailTask(cardId).execute(mDb);
+            GetCardDetailInterface getCardDetailInterface = new GetCardDetailInterface() {
+                @Override
+                public void updateAdapter(CardModel result) {
+                    cardModel = result;
+                    updateView();
+                }
+            };
+            getCardDetailTask = new GetCardDetailTask(getCardDetailInterface, cardId);
+            getCardDetailTask.execute(getActivity());
         }
     }
 
@@ -132,7 +137,6 @@ public class CardDetailFragment extends Fragment {
 
         if (toolbar != null) {
             ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-//            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         updateView();
@@ -269,7 +273,7 @@ public class CardDetailFragment extends Fragment {
 //        void onFragmentInteraction(Uri uri);
 //    }
 
-    private class RelatedAdapter extends RecyclerView.Adapter<CardDetailFragment.RecyclerViewHolder> {
+    private class RelatedAdapter extends RecyclerView.Adapter<RelatedViewHolder> {
 
         private List<CardModel> cardModelList;
 
@@ -278,13 +282,13 @@ public class CardDetailFragment extends Fragment {
         }
 
         @Override
-        public CardDetailFragment.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new CardDetailFragment.RecyclerViewHolder(LayoutInflater.from(parent.getContext())
+        public RelatedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new RelatedViewHolder(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.card_detail_related, parent, false), cardModelList);
         }
 
         @Override
-        public void onBindViewHolder(final CardDetailFragment.RecyclerViewHolder holder, final int position) {
+        public void onBindViewHolder(final RelatedViewHolder holder, final int position) {
             final CardModel cardModel = cardModelList.get(position);
 
             String strengthDotName = String.valueOf(cardModel.getStrength()) + " • " + cardModel.getName().get(LANGUAGE);
@@ -308,14 +312,13 @@ public class CardDetailFragment extends Fragment {
         }
     }
 
-
-    private class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class RelatedViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int cardId;
         private List<CardModel> cardModelList;
         private TextView cardName;
         private TextView cardInfo;
 
-        RecyclerViewHolder(View view, List<CardModel> cardModelList) {
+        RelatedViewHolder(View view, List<CardModel> cardModelList) {
             super(view);
             itemView.setOnClickListener(this);
 
@@ -330,29 +333,6 @@ public class CardDetailFragment extends Fragment {
             Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
             startActivity(intent,
                     ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
-        }
-    }
-
-
-    public class GetCardDetailTask extends AsyncTask<CardDatabase, Void, CardModel> {
-
-        private final int cardId;
-
-        public GetCardDetailTask(int cardId) {
-            this.cardId = cardId;
-        }
-
-        @Override
-        protected CardModel doInBackground(CardDatabase... mDb) {
-            CardHelper cardHelper = new CardHelper(mDb[0]);
-
-            return cardHelper.findCardById(cardId);
-        }
-
-        @Override
-        protected void onPostExecute(CardModel result) {
-            cardModel = result;
-            updateView();
         }
     }
 }

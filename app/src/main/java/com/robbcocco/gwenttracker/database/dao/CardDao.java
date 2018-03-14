@@ -32,7 +32,7 @@ public interface CardDao {
     @Query("SELECT cardid FROM cards WHERE card_tag LIKE :tag LIMIT 1")
     int getIdByTag(String tag);
 
-    @Query("SELECT * FROM cards")
+    @Query("SELECT * FROM cards LIMIT 1")
     List<CardModel> testDB();
 
     @Query("SELECT * FROM cards WHERE cardid = :id LIMIT 1")

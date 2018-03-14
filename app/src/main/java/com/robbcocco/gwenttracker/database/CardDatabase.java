@@ -77,26 +77,7 @@ public abstract class CardDatabase extends RoomDatabase {
                 .addMigrations()
                 .fallbackToDestructiveMigration()
                 .build();
-//        new PopulateDatabaseAsyncTask(mDb).execute(context);
 
         return mDb;
-    }
-
-    private static class PopulateDatabaseAsyncTask extends AsyncTask<Context, Void, Void> {
-
-        private CardDatabase mDb;
-
-        PopulateDatabaseAsyncTask(CardDatabase cardDatabase) {
-            mDb = cardDatabase;
-        }
-
-        @Override
-        protected Void doInBackground(Context... context) {
-            if (mDb.cardDao().testDB().isEmpty()) {
-                CardGenerator.GenerateCollection(mDb, context[0]);
-            }
-            return null;
-        }
-
     }
 }
