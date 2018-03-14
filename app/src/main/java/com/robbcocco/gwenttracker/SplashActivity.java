@@ -26,12 +26,6 @@ public class SplashActivity extends AppCompatActivity {
         getDatabaseTask.execute(getApplicationContext());
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        getDatabaseTask.cancel(true);
-    }
-
     private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

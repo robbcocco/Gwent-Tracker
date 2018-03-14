@@ -3,7 +3,6 @@ package com.robbcocco.gwenttracker;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -17,7 +16,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,15 +28,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
 import com.robbcocco.gwenttracker.database.entity.RarityModel;
-import com.robbcocco.gwenttracker.database.helper.CardHelper;
-import com.robbcocco.gwenttracker.tasks.GetCardDetailInterface;
-import com.robbcocco.gwenttracker.tasks.GetCardDetailTask;
-import com.robbcocco.gwenttracker.tasks.GetDBCardListTask;
+import com.robbcocco.gwenttracker.tasks.GetCardListInterface;
+import com.robbcocco.gwenttracker.tasks.GetCardListTask;
 import com.robbcocco.gwenttracker.tasks.GetDBCategoryListTask;
 import com.robbcocco.gwenttracker.tasks.GetDBFactionListTask;
 import com.robbcocco.gwenttracker.tasks.GetDBListInterface;
@@ -61,7 +56,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private SharedPreferences sharedPreferences;
     private static String LANGUAGE="en-US";
 
-    private GetDBCardListTask getDBCardListTask;
+    private GetCardListTask getCardListTask;
 //    private GetCardDetailTask getCardDetailTask;
     private GetDBFactionListTask getDBFactionListTask;
     private GetDBCategoryListTask getDBCategoryListTask;
@@ -172,7 +167,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     @Override
     public void onPause() {
         super.onPause();
-        getDBCardListTask.cancel(true);
+        getCardListTask.cancel(true);
 //        getCardDetailTask.cancel(true);
         getDBFactionListTask.cancel(true);
         getDBCategoryListTask.cancel(true);
@@ -212,16 +207,21 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     public void executeAsyncTasks() {
-        GetDBListInterface getDBListInterface = new GetDBListInterface() {
+        GetCardListInterface getCardListInterface = new GetCardListInterface() {
+            @Override
+            public void updateAdapter(CardModel result) {
+                collectionViewAdapter.updateCardModel(result);
+            }
+
             @Override
             public void updateAdapter(List result) {
                 collectionViewAdapter.updateCardModelList(result);
             }
         };
-        getDBCardListTask = new GetDBCardListTask(getDBListInterface);
-        getDBCardListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
+        getCardListTask = new GetCardListTask(getCardListInterface);
+        getCardListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
-        getDBListInterface = new GetDBListInterface() {
+        GetDBListInterface getDBListInterface = new GetDBListInterface() {
             @Override
             public void updateAdapter(List result) {
                 factionListAdapter.updateModelList(result);
@@ -506,6 +506,15 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 //                getCardDetailTask = new GetCardDetailTask(getCardDetailInterface, cardModel.id);
 //                getCardDetailTask.execute(getActivity());
 //            }
+        }
+
+        public void updateCardModel(CardModel cardModel) {
+            for (CardModel card : cardModelList) {
+                if (card.id == cardModel.id) {
+                    cardModelList.set(cardModelList.indexOf(card), cardModel);
+                }
+            }
+            add(cardModel);
         }
 
 //        public void updateCardModelAtPosition(CardModel cardModel, int position) {
