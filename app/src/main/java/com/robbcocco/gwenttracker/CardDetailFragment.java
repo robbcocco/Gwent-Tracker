@@ -3,6 +3,7 @@ package com.robbcocco.gwenttracker;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -104,7 +105,7 @@ public class CardDetailFragment extends Fragment {
                 }
             };
             getCardDetailTask = new GetCardDetailTask(getCardDetailInterface, cardId);
-            getCardDetailTask.execute(getActivity());
+            getCardDetailTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
         }
     }
 

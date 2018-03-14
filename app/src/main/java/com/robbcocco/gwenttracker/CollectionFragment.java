@@ -219,7 +219,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBCardListTask = new GetDBCardListTask(getDBListInterface);
-        getDBCardListTask.execute(getActivity());
+        getDBCardListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
         getDBListInterface = new GetDBListInterface() {
             @Override
@@ -228,7 +228,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBFactionListTask = new GetDBFactionListTask(getDBListInterface);
-        getDBFactionListTask.execute(getActivity());
+        getDBFactionListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
         getDBListInterface = new GetDBListInterface() {
             @Override
@@ -243,7 +243,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBCategoryListTask = new GetDBCategoryListTask(getDBListInterface);
-        getDBCategoryListTask.execute(getActivity());
+        getDBCategoryListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
         getDBListInterface = new GetDBListInterface() {
             @Override
@@ -258,7 +258,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBRarityListTask = new GetDBRarityListTask(getDBListInterface);
-        getDBRarityListTask.execute(getActivity());
+        getDBRarityListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
     }
 
     private void setupFiltersView() {
