@@ -114,23 +114,23 @@ public class CardDetailFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_card_detail, container, false);
 
-        toolbar = (Toolbar) view.findViewById(R.id.card_detail_toolbar);
-        collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.card_detail_collapsingtoolbar);
+        toolbar = view.findViewById(R.id.card_detail_toolbar);
+        collapsingToolbar = view.findViewById(R.id.card_detail_collapsingtoolbar);
 
-        factionArtView = (ImageView) view.findViewById(R.id.card_detail_faction_art);
-        artView = (ImageView) view.findViewById(R.id.card_detail_art);
-        factionView = (TextView) view.findViewById(R.id.card_detail_faction);
-        rarityViewParent = (LinearLayout) view.findViewById(R.id.card_detail_rarity_parent);
-        rarityView = (TextView) view.findViewById(R.id.card_detail_rarity);
-        strView = (TextView) view.findViewById(R.id.card_detail_set);
-        categoriesViewParent = (LinearLayout) view.findViewById(R.id.card_detail_categories_parent);
-        categoriesView = (TextView) view.findViewById(R.id.card_detail_categories);
-        flavorView = (TextView) view.findViewById(R.id.card_detail_flavor);
-        infoViewParent = (LinearLayout) view.findViewById(R.id.card_detail_info_parent);
-        infoView = (TextView) view.findViewById(R.id.card_detail_info);
+        factionArtView = view.findViewById(R.id.card_detail_faction_art);
+        artView = view.findViewById(R.id.card_detail_art);
+        factionView = view.findViewById(R.id.card_detail_faction);
+        rarityViewParent = view.findViewById(R.id.card_detail_rarity_parent);
+        rarityView = view.findViewById(R.id.card_detail_rarity);
+        strView = view.findViewById(R.id.card_detail_set);
+        categoriesViewParent = view.findViewById(R.id.card_detail_categories_parent);
+        categoriesView = view.findViewById(R.id.card_detail_categories);
+        flavorView = view.findViewById(R.id.card_detail_flavor);
+        infoViewParent = view.findViewById(R.id.card_detail_info_parent);
+        infoView = view.findViewById(R.id.card_detail_info);
 
-        relatedTitleView = (LinearLayout) view.findViewById(R.id.card_detail_related_parent);
-        recyclerView = (RecyclerView) view.findViewById(R.id.card_detail_related_list);
+        relatedTitleView = view.findViewById(R.id.card_detail_related_parent);
+        recyclerView = view.findViewById(R.id.card_detail_related_list);
         recyclerViewAdapter = new RelatedAdapter(new ArrayList<CardModel>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -323,8 +323,8 @@ public class CardDetailFragment extends Fragment {
             itemView.setOnClickListener(this);
 
             this.cardModelList = cardModelList;
-            cardName = (TextView) view.findViewById(R.id.card_detail_related_card_name);
-            cardInfo = (TextView) view.findViewById(R.id.card_detail_related_card_info);
+            cardName = view.findViewById(R.id.card_detail_related_card_name);
+            cardInfo = view.findViewById(R.id.card_detail_related_card_info);
         }
 
         @Override
