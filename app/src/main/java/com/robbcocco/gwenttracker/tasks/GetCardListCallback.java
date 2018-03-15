@@ -6,6 +6,6 @@ import java.util.List;
  * Created by rober on 3/14/2018.
  */
 
-public interface GetCardListInterface extends GetCardDetailInterface {
+public interface GetCardListCallback extends GetCardDetailCallback {
     void updateAdapter(List result);
 }

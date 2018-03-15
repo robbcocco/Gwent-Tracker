@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
-import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.RarityModel;
 
 import java.util.List;
@@ -15,10 +14,10 @@ import java.util.List;
 
 public class GetDBRarityListTask extends AsyncTask<Context, Void, List<RarityModel>> {
 
-    private GetDBListInterface GetDBListInterface;
+    private GetDBListCallback GetDBListCallback;
 
-    public GetDBRarityListTask(GetDBListInterface GetDBListInterface) {
-        this.GetDBListInterface = GetDBListInterface;
+    public GetDBRarityListTask(GetDBListCallback GetDBListCallback) {
+        this.GetDBListCallback = GetDBListCallback;
     }
 
     @Override
@@ -30,6 +29,6 @@ public class GetDBRarityListTask extends AsyncTask<Context, Void, List<RarityMod
 
     @Override
     protected void onPostExecute(List<RarityModel> result) {
-        GetDBListInterface.updateAdapter(result);
+        GetDBListCallback.updateAdapter(result);
     }
 }

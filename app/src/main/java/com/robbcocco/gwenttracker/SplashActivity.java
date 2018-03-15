@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.Window;
 
 import com.robbcocco.gwenttracker.tasks.GetDatabaseTask;
-import com.robbcocco.gwenttracker.tasks.GetDatabaseInterface;
+import com.robbcocco.gwenttracker.tasks.GetDatabaseCallback;
 
 public class SplashActivity extends AppCompatActivity {
     private GetDatabaseTask getDatabaseTask;
@@ -16,13 +16,13 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         super.onCreate(savedInstanceState);
 
-        GetDatabaseInterface getDatabaseInterface = new GetDatabaseInterface() {
+        GetDatabaseCallback getDatabaseCallback = new GetDatabaseCallback() {
             @Override
             public void startActivity() {
                 startMainActivity();
             }
         };
-        getDatabaseTask = new GetDatabaseTask(getDatabaseInterface);
+        getDatabaseTask = new GetDatabaseTask(getDatabaseCallback);
         getDatabaseTask.execute(getApplicationContext());
     }
 

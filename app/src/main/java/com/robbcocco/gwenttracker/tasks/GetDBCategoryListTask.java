@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
-import com.robbcocco.gwenttracker.database.entity.FactionModel;
 
 import java.util.List;
 
@@ -15,10 +14,10 @@ import java.util.List;
 
 public class GetDBCategoryListTask extends AsyncTask<Context, Void, List<CategoryModel>> {
 
-    private GetDBListInterface GetDBListInterface;
+    private GetDBListCallback GetDBListCallback;
 
-    public GetDBCategoryListTask(GetDBListInterface GetDBListInterface) {
-        this.GetDBListInterface = GetDBListInterface;
+    public GetDBCategoryListTask(GetDBListCallback GetDBListCallback) {
+        this.GetDBListCallback = GetDBListCallback;
     }
 
     @Override
@@ -30,6 +29,6 @@ public class GetDBCategoryListTask extends AsyncTask<Context, Void, List<Categor
 
     @Override
     protected void onPostExecute(List<CategoryModel> result) {
-        GetDBListInterface.updateAdapter(result);
+        GetDBListCallback.updateAdapter(result);
     }
 }

@@ -11,10 +11,10 @@ import com.robbcocco.gwenttracker.database.CardGenerator;
  */
 
 public class GetDatabaseTask extends AsyncTask<Context, Void, Void> {
-    private GetDatabaseInterface getDatabaseInterface;
+    private GetDatabaseCallback getDatabaseCallback;
 
-    public GetDatabaseTask(GetDatabaseInterface getDatabaseInterface) {
-        this.getDatabaseInterface = getDatabaseInterface;
+    public GetDatabaseTask(GetDatabaseCallback getDatabaseCallback) {
+        this.getDatabaseCallback = getDatabaseCallback;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class GetDatabaseTask extends AsyncTask<Context, Void, Void> {
 
     @Override
     protected void onPostExecute(Void voids) {
-        getDatabaseInterface.startActivity();
+        getDatabaseCallback.startActivity();
     }
 }

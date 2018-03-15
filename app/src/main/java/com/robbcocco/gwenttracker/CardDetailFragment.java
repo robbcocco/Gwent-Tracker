@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.tasks.GetCardDetailTask;
-import com.robbcocco.gwenttracker.tasks.GetCardDetailInterface;
+import com.robbcocco.gwenttracker.tasks.GetCardDetailCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,14 +97,14 @@ public class CardDetailFragment extends Fragment {
         if (getArguments() != null) {
             int cardId = getArguments().getInt(CARD_ID);
 
-            GetCardDetailInterface getCardDetailInterface = new GetCardDetailInterface() {
+            GetCardDetailCallback getCardDetailCallback = new GetCardDetailCallback() {
                 @Override
                 public void updateAdapter(CardModel result) {
                     cardModel = result;
                     updateView();
                 }
             };
-            getCardDetailTask = new GetCardDetailTask(getCardDetailInterface, cardId);
+            getCardDetailTask = new GetCardDetailTask(getCardDetailCallback, cardId);
             getCardDetailTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
         }
     }

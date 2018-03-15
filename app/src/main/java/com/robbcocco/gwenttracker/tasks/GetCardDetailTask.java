@@ -12,11 +12,11 @@ import com.robbcocco.gwenttracker.database.helper.CardHelper;
  */
 
 public class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
-    private GetCardDetailInterface getCardDetailInterface;
+    private GetCardDetailCallback getCardDetailCallback;
     private final int cardId;
 
-    public GetCardDetailTask(GetCardDetailInterface getCardDetailInterface, int cardId) {
-        this.getCardDetailInterface = getCardDetailInterface;
+    public GetCardDetailTask(GetCardDetailCallback getCardDetailCallback, int cardId) {
+        this.getCardDetailCallback = getCardDetailCallback;
         this.cardId = cardId;
     }
 
@@ -30,6 +30,6 @@ public class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
 
     @Override
     protected void onPostExecute(CardModel result) {
-        getCardDetailInterface.updateAdapter(result);
+        getCardDetailCallback.updateAdapter(result);
     }
 }

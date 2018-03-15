@@ -6,6 +6,6 @@ import com.robbcocco.gwenttracker.database.entity.CardModel;
  * Created by rober on 3/14/2018.
  */
 
-public interface GetCardDetailInterface {
+public interface GetCardDetailCallback {
     void updateAdapter(CardModel result);
 }

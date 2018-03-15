@@ -5,10 +5,8 @@ import android.os.AsyncTask;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
-import com.robbcocco.gwenttracker.database.helper.CardHelper;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,10 +16,10 @@ import java.util.concurrent.Executors;
 
 public class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
 
-    private GetCardListInterface getCardListInterface;
+    private GetCardListCallback getCardListInterface;
     private ExecutorService executor;
 
-    public GetCardListTask(GetCardListInterface getCardListInterface) {
+    public GetCardListTask(GetCardListCallback getCardListInterface) {
         this.getCardListInterface = getCardListInterface;
     }
 

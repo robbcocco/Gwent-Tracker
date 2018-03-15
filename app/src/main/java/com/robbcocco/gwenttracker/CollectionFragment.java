@@ -5,11 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -30,20 +28,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
 import com.robbcocco.gwenttracker.database.entity.RarityModel;
-import com.robbcocco.gwenttracker.tasks.GetCardListInterface;
+import com.robbcocco.gwenttracker.tasks.GetCardListCallback;
 import com.robbcocco.gwenttracker.tasks.GetCardListTask;
 import com.robbcocco.gwenttracker.tasks.GetDBCategoryListTask;
 import com.robbcocco.gwenttracker.tasks.GetDBFactionListTask;
-import com.robbcocco.gwenttracker.tasks.GetDBListInterface;
+import com.robbcocco.gwenttracker.tasks.GetDBListCallback;
 import com.robbcocco.gwenttracker.tasks.GetDBRarityListTask;
 
 import java.util.ArrayList;
@@ -163,9 +157,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
 
-        mShimmerViewContainer = rootView.findViewById(R.id.shimmer_view_collection_list);
-        mShimmerViewContainer.startShimmerAnimation();
-
         setupFiltersView();
 
         setupCollectionView(rootView);
@@ -194,6 +185,9 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     public void setupCollectionView(View view) {
+        mShimmerViewContainer = view.findViewById(R.id.shimmer_view_collection_list);
+        mShimmerViewContainer.startShimmerAnimation();
+
         collectionRecyclerView = view.findViewById(R.id.collection_list);
         collectionViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
         collectionRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -226,7 +220,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     public void executeAsyncTasks() {
-        GetCardListInterface getCardListInterface = new GetCardListInterface() {
+        GetCardListCallback getCardListInterface = new GetCardListCallback() {
             @Override
             public void updateAdapter(CardModel result) {
                 collectionViewAdapter.updateCardModel(result);
@@ -235,23 +229,21 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             @Override
             public void updateAdapter(List result) {
                 collectionViewAdapter.updateCardModelList(result);
-                mShimmerViewContainer.stopShimmerAnimation();
-                mShimmerViewContainer.setVisibility(View.GONE);
             }
         };
         getCardListTask = new GetCardListTask(getCardListInterface);
         getCardListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
-        GetDBListInterface getDBListInterface = new GetDBListInterface() {
+        GetDBListCallback getDBListCallback = new GetDBListCallback() {
             @Override
             public void updateAdapter(List result) {
                 factionListAdapter.updateModelList(result);
             }
         };
-        getDBFactionListTask = new GetDBFactionListTask(getDBListInterface);
+        getDBFactionListTask = new GetDBFactionListTask(getDBListCallback);
         getDBFactionListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
-        getDBListInterface = new GetDBListInterface() {
+        getDBListCallback = new GetDBListCallback() {
             @Override
             public void updateAdapter(List result) {
                 Collections.sort(result, new Comparator<CategoryModel>() {
@@ -263,10 +255,10 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 categoryListAdapter.updateModelList(result);
             }
         };
-        getDBCategoryListTask = new GetDBCategoryListTask(getDBListInterface);
+        getDBCategoryListTask = new GetDBCategoryListTask(getDBListCallback);
         getDBCategoryListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
 
-        getDBListInterface = new GetDBListInterface() {
+        getDBListCallback = new GetDBListCallback() {
             @Override
             public void updateAdapter(List result) {
                 Collections.sort(result, new Comparator<RarityModel>() {
@@ -278,7 +270,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 rarityListAdapter.updateModelList(result);
             }
         };
-        getDBRarityListTask = new GetDBRarityListTask(getDBListInterface);
+        getDBRarityListTask = new GetDBRarityListTask(getDBListCallback);
         getDBRarityListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
     }
 
@@ -478,6 +470,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     public class CollectionAdapter extends RecyclerView.Adapter<CollectionViewHolder> {
 
         public CollectionAdapter(List<CardModel> cardModels) {
+            setHasStableIds(true);
             cardModelList = cardModels;
         }
 
@@ -491,28 +484,12 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         public void onBindViewHolder(final CollectionViewHolder holder, final int position) {
             final CardModel cardModel = mSortedList.get(position);
 
-//            holder.cardShimmer.startShimmerAnimation();
-
             if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
                     cardModel.getVariationModelList().get(0).getArt_low() != null) {
                 GlideApp.with(holder.itemView)
                         .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
                         .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-//                                holder.cardShimmer.stopShimmerAnimation();
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-//                                holder.cardShimmer.stopShimmerAnimation();
-//                                holder.cardShimmer.setVisibility(View.INVISIBLE);
-                                return false;
-                            }
-                        })
                         .into(holder.cardArt);
             }
 
@@ -527,9 +504,16 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             return mSortedList.size();
         }
 
+        @Override
+        public long getItemId(int position) {
+            return mSortedList.get(position).id;
+        }
+
         public void updateCardModelList(List<CardModel> cardModels) {
             cardModelList = cardModels;
             mSortedList.addAll(cardModels);
+            mShimmerViewContainer.stopShimmerAnimation();
+            mShimmerViewContainer.setVisibility(View.GONE);
         }
 
         public void updateCardModel(CardModel cardModel) {
@@ -556,7 +540,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
     private class CollectionViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private int cardId;
-//        private ShimmerFrameLayout cardShimmer;
         private ImageView cardArt;
         private TextView cardName;
 
@@ -564,7 +547,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             super(view);
             itemView.setOnClickListener(this);
 
-//            cardShimmer = view.findViewById(R.id.shimmer_view_collection_card);
             cardArt = view.findViewById(R.id.collection_card_art);
             cardName = view.findViewById(R.id.collection_card_name);
         }
