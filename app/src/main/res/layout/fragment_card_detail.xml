@@ -33,7 +33,7 @@
                     android:adjustViewBounds="true"
                     android:alpha="0.5"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/neutral"/>
+                    android:src="@drawable/faction_neutral"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                                         android:layout_height="wrap_content"
                                         android:padding="4dp"
                                         android:gravity="start"
-                                        android:textSize="12sp"
+                                        android:textSize="@dimen/subtitle_size"
                                         android:fontFamily="sans-serif-smallcaps"
                                         android:textStyle="bold"
                                         android:text="@string/card_str"/>
@@ -120,7 +120,7 @@
                                         android:layout_height="wrap_content"
                                         android:padding="4dp"
                                         android:gravity="start"
-                                        android:textSize="12sp"
+                                        android:textSize="@dimen/subtitle_size"
                                         android:fontFamily="sans-serif-smallcaps"
                                         android:textStyle="bold"
                                         android:text="@string/card_faction"/>
@@ -159,7 +159,7 @@
                                         android:drawableEnd="@drawable/ic_info_outline_24dp"
                                         android:padding="4dp"
                                         android:gravity="start"
-                                        android:textSize="12sp"
+                                        android:textSize="@dimen/subtitle_size"
                                         android:fontFamily="sans-serif-smallcaps"
                                         android:textStyle="bold"
                                         android:text="@string/card_rarity"/>
@@ -239,7 +239,7 @@
                         android:drawableEnd="@drawable/ic_info_outline_24dp"
                         android:padding="8dp"
                         android:gravity="start"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/subtitle_size"
                         android:fontFamily="sans-serif-smallcaps"
                         android:textStyle="bold"
                         android:text="@string/card_info"/>
@@ -277,7 +277,7 @@
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:gravity="start"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/subtitle_size"
                         android:fontFamily="sans-serif-smallcaps"
                         android:textStyle="bold"
                         android:text="@string/card_categories"/>
@@ -315,7 +315,7 @@
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:gravity="start"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/subtitle_size"
                         android:fontFamily="sans-serif-smallcaps"
                         android:textStyle="bold"
                         android:text="@string/card_related"/>

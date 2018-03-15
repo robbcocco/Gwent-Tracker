@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -27,7 +26,4 @@ public interface FactionDao {
 
     @Query("SELECT * FROM factions")
     List<FactionModel> loadAllFactions();
-
-    @Query("SELECT * FROM factions WHERE factionid = :factionId LIMIT 1")
-    LiveData<FactionModel> findFactionById(int factionId);
 }

@@ -17,14 +17,14 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
 
-    <style name="AlertDialogCustom" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:textColor">#D2D2D2</item>
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.Splash" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
 
 </resources>

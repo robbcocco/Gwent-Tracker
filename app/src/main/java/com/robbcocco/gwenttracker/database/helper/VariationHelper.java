@@ -1,16 +1,8 @@
 package com.robbcocco.gwenttracker.database.helper;
 
-import android.arch.core.util.Function;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.Transformations;
-import android.support.annotation.Nullable;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.dao.CardDao;
-import com.robbcocco.gwenttracker.database.entity.RarityModel;
-import com.robbcocco.gwenttracker.database.entity.SetModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
 
 import java.util.List;

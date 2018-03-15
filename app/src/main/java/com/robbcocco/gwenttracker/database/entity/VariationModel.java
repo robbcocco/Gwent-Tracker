@@ -14,7 +14,7 @@ import java.net.URL;
  */
 
 @Entity(tableName = "variations",
-        indices = {@Index("variationid"), @Index("card_id"), @Index("rarity_id"), @Index("set_id")},
+        indices = {@Index("variationid"), @Index("card_id"), @Index("rarity_id"), @Index("set_id"), @Index("collectible")},
         foreignKeys = {
                 @ForeignKey(entity = CardModel.class,
                         parentColumns = "cardid",

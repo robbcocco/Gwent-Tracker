@@ -1,13 +1,10 @@
 package com.robbcocco.gwenttracker.database.helper;
 
-import android.content.Context;
 
 import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.dao.CardDao;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**

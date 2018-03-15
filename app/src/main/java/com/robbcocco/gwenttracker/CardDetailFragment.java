@@ -165,23 +165,23 @@ public class CardDetailFragment extends Fragment {
                 int factionArtId;
                 switch (cardModel.getFactionModel().getTag()) {
                     case "Monster":
-                        factionArtId = R.drawable.monsters;
+                        factionArtId = R.drawable.faction_monsters;
                         break;
                     case "Nilfgaard":
-                        factionArtId = R.drawable.nilfgaard;
+                        factionArtId = R.drawable.faction_nilfgaard;
                         break;
                     case "Northern Realms":
-                        factionArtId = R.drawable.northernrealms;
+                        factionArtId = R.drawable.faction_northernrealms;
                         break;
                     case "Scoiatael":
-                        factionArtId = R.drawable.scoiatael;
+                        factionArtId = R.drawable.faction_scoiatael;
                         break;
                     case "Skellige":
-                        factionArtId = R.drawable.skellige;
+                        factionArtId = R.drawable.faction_skellige;
                         break;
                     case "Neutral":
                     default:
-                        factionArtId = R.drawable.neutral;
+                        factionArtId = R.drawable.faction_neutral;
                         break;
                 }
                 factionArtView.setImageResource(factionArtId);
@@ -193,7 +193,7 @@ public class CardDetailFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         AlertDialog.Builder builder = new AlertDialog
-                                .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                                .Builder(new ContextThemeWrapper(getActivity(), R.style.AppTheme_AlertDialog));
                         builder.setMessage(cardModel.getRarity(LANGUAGE))
                                 .setTitle("Scraps");
                         AlertDialog dialog = builder.create();
@@ -217,7 +217,7 @@ public class CardDetailFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         AlertDialog.Builder builder = new AlertDialog
-                                .Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                                .Builder(new ContextThemeWrapper(getActivity(), R.style.AppTheme_AlertDialog));
                         builder.setMessage(cardModel.getKeywords(LANGUAGE))
                                 .setTitle("Keywords");
                         AlertDialog dialog = builder.create();

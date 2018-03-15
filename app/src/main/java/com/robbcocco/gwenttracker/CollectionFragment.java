@@ -172,7 +172,16 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     @Override
     public void onResume() {
         super.onResume();
-        if (cardModelList == null) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (!LANGUAGE.equals(sharedPreferences.getString("lang_list", "en-US"))) {
+            LANGUAGE = sharedPreferences.getString("lang_list", "en-US");
+            collectionViewAdapter.replaceAll(cardModelList);
+            factionListAdapter.notifyDataSetChanged();
+            categoryListAdapter.updateModelList(categoryModelList);
+            rarityListAdapter.notifyDataSetChanged();
+        }
+
+        if (cardModelList.isEmpty()) {
             mShimmerViewContainer.startShimmerAnimation();
             executeAsyncTasks();
         }
@@ -252,12 +261,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         getDBListCallback = new GetDBListCallback() {
             @Override
             public void updateAdapter(List result) {
-                Collections.sort(result, new Comparator<CategoryModel>() {
-                    @Override
-                    public int compare(CategoryModel o1, CategoryModel o2) {
-                        return o1.getName().get(LANGUAGE).compareToIgnoreCase(o2.getName().get(LANGUAGE));
-                    }
-                });
                 categoryListAdapter.updateModelList(result);
             }
         };
@@ -670,6 +673,12 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         }
 
         public void updateModelList(List<CategoryModel> models) {
+            Collections.sort(models, new Comparator<CategoryModel>() {
+                @Override
+                public int compare(CategoryModel o1, CategoryModel o2) {
+                    return o1.getName().get(LANGUAGE).compareToIgnoreCase(o2.getName().get(LANGUAGE));
+                }
+            });
             categoryModelList = models;
             notifyDataSetChanged();
         }

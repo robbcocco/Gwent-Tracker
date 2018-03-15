@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -27,7 +26,4 @@ public interface CategoryDao {
 
     @Query("SELECT DISTINCT categories.* FROM categories INNER JOIN card_categories ON card_categories.category_id = categories.categoryid")
     List<CategoryModel> loadAllCategories();
-
-    @Query("SELECT * FROM categories INNER JOIN card_categories ON categories.categoryid = card_categories.category_id WHERE card_categories.card_id = :cardId")
-    LiveData<List<CategoryModel>> getCategoriesByCardId(int cardId);
 }

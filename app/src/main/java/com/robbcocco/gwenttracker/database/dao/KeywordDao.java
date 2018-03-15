@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -24,10 +23,4 @@ public interface KeywordDao {
 
     @Query("SELECT keywordid FROM keywords WHERE keyword_tag LIKE :tag LIMIT 1")
     int getIdByTag(String tag);
-
-    @Query("SELECT * FROM keywords")
-    LiveData<List<KeywordModel>> loadAllKeywords();
-
-    @Query("SELECT * FROM keywords INNER JOIN card_keywords ON keywords.keywordid = card_keywords.keyword_id WHERE card_keywords.card_id = :cardId")
-    LiveData<List<KeywordModel>> getKeywordsByCardId(int cardId);
 }

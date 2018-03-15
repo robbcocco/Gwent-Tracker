@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -27,7 +26,4 @@ public interface RarityDao {
 
     @Query("SELECT DISTINCT rarities.* FROM rarities INNER JOIN variations WHERE variations.rarity_id = rarities.rarityid")
     List<RarityModel> loadAllRarities();
-
-    @Query("SELECT * FROM rarities WHERE rarityid = :rarityId LIMIT 1")
-    LiveData<RarityModel> findRarityById(int rarityId);
 }

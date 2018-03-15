@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -24,10 +23,4 @@ public interface LoyaltyDao {
 
     @Query("SELECT loyaltyid FROM loyalties WHERE loyalty_name LIKE :name LIMIT 1")
     int getIdByName(String name);
-
-    @Query("SELECT * FROM loyalties")
-    LiveData<List<LoyaltyModel>> loadAllLoyalties();
-
-    @Query("SELECT * FROM loyalties INNER JOIN card_loyalties ON loyalties.loyaltyid = card_loyalties.loyalty_id WHERE card_loyalties.card_id = :cardId")
-    LiveData<List<LoyaltyModel>> getLoyaltiesByCardId(int cardId);
 }

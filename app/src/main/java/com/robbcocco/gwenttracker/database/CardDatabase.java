@@ -39,7 +39,7 @@ import com.robbcocco.gwenttracker.database.entity.VariationModel;
  * Created by rober on 2/23/2018.
  */
 
-@Database(version = 4, entities = {
+@Database(version = 5, entities = {
     CardCategoryModel.class, CardKeywordModel.class, CardLoyaltyModel.class, CardModel.class,
     CategoryModel.class, FactionModel.class, KeywordModel.class, LoyaltyModel.class,
     RarityModel.class, RelatedCardModel.class, SetModel.class, VariationModel.class

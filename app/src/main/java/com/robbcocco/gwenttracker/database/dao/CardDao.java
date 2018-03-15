@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -64,10 +63,4 @@ public interface CardDao {
 
     @Query("SELECT * FROM cards INNER JOIN related_cards ON cards.cardid = related_cards.related_card_id WHERE related_cards.card_id = :cardId")
     List<CardModel> getRelatedCards(int cardId);
-
-//    @Query("SELECT * FROM cards WHERE card_name LIKE '%'||:name||'%'")
-//    LiveData<List<CardModel>> findCardsByName(String name);
-//
-//    @Query("SELECT * FROM cards WHERE faction_id IN (:factionIds)")
-//    LiveData<List<CardModel>> findCardsByFilters(int[] factionIds);
 }

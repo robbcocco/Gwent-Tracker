@@ -1,6 +1,5 @@
 package com.robbcocco.gwenttracker.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -24,10 +23,4 @@ public interface SetDao {
 
     @Query("SELECT setid FROM sets WHERE set_name LIKE :name LIMIT 1")
     int getIdByName(String name);
-
-    @Query("SELECT * FROM sets")
-    LiveData<List<SetModel>> loadAllSets();
-
-    @Query("SELECT * FROM sets WHERE setid = :setId LIMIT 1")
-    LiveData<SetModel> findSetById(int setId);
 }
