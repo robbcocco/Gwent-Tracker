@@ -63,6 +63,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private GetDBCategoryListTask getDBCategoryListTask;
     private GetDBRarityListTask getDBRarityListTask;
 
+    private View rootView;
     private ShimmerFrameLayout mShimmerViewContainer;
     private LinearLayout filters;
     private FloatingActionButton fab;
@@ -155,12 +156,14 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_collection, container, false);
+        if (rootView != null) {
+            return rootView;
+        }
+        rootView = inflater.inflate(R.layout.fragment_collection, container, false);
+        setRetainInstance(true);
 
         setupFiltersView();
-
         setupCollectionView(rootView);
-
         executeAsyncTasks();
 
         return rootView;
@@ -169,7 +172,10 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     @Override
     public void onResume() {
         super.onResume();
-        mShimmerViewContainer.startShimmerAnimation();
+        if (cardModelList == null) {
+            mShimmerViewContainer.startShimmerAnimation();
+            executeAsyncTasks();
+        }
     }
 
     @Override
