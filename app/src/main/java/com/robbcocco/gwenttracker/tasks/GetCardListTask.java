@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 public class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
 
     private GetCardListInterface getCardListInterface;
+    private ExecutorService executor;
 
     public GetCardListTask(GetCardListInterface getCardListInterface) {
         this.getCardListInterface = getCardListInterface;
@@ -28,7 +29,7 @@ public class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
     protected List<CardModel> doInBackground(Context... context) {
         CardDatabase mDb = CardDatabase.getDatabase(context[0]);
         List<CardModel> cardModelList = mDb.cardDao().loadAllCards();
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        executor = Executors.newFixedThreadPool(10);
         for (CardModel card : cardModelList) {
             if (isCancelled()) { break; }
             new GetCardDetailTask(getCardListInterface, card.id)
