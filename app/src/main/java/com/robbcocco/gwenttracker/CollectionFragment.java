@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.shimmer.ShimmerFrameLayout;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
@@ -44,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import io.supercharge.shimmerlayout.ShimmerLayout;
 
 import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
 
@@ -64,7 +65,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private GetDBRarityListTask getDBRarityListTask;
 
     private View rootView;
-    private ShimmerFrameLayout mShimmerViewContainer;
+    private ShimmerLayout mShimmerViewContainer;
     private LinearLayout filters;
     private FloatingActionButton fab;
     private FactionListAdapter factionListAdapter;
