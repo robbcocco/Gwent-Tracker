@@ -511,11 +511,9 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         public void onBindViewHolder(final CollectionViewHolder holder, final int position) {
             final CardModel cardModel = mSortedList.get(position);
 
-            holder.shimmerArt.startShimmerAnimation();
-
             if (cardModel.getName() != null) {
-                holder.shimmerName.stopShimmerAnimation();
                 holder.shimmerName.setVisibility(View.GONE);
+                holder.shimmerArt.setVisibility(View.GONE);
 
                 if (cardModel.getVariationModelList() != null &&
                         !cardModel.getVariationModelList().isEmpty() &&
@@ -523,21 +521,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
                     GlideApp.with(holder.itemView)
                             .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
-                            .listener(new RequestListener<Drawable>() {
-                                @Override
-                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    holder.shimmerArt.stopShimmerAnimation();
-                                    holder.shimmerArt.setVisibility(View.GONE);
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                    holder.shimmerArt.stopShimmerAnimation();
-                                    holder.shimmerArt.setVisibility(View.GONE);
-                                    return false;
-                                }
-                            })
                             .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
                             .into(holder.cardArt);
                 }
@@ -548,6 +531,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 holder.itemView.setTag(cardModel);
             }
             else {
+                holder.shimmerArt.startShimmerAnimation();
                 holder.shimmerName.startShimmerAnimation();
             }
         }
@@ -610,7 +594,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         public void onClick(View view) {
             cardId = mSortedList.get(getAdapterPosition()).id;
 
-            if (mSortedList.get(getAdapterPosition()).getTag() != null) {
+            if (mSortedList.get(getAdapterPosition()).getName() != null) {
                 Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
                 startActivity(intent,
                         ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
