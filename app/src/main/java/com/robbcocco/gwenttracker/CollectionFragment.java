@@ -5,9 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -28,6 +29,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
 import com.robbcocco.gwenttracker.database.entity.FactionModel;
@@ -65,7 +71,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private GetDBRarityListTask getDBRarityListTask;
 
     private View rootView;
-    private ShimmerLayout mShimmerViewContainer;
     private LinearLayout filters;
     private FloatingActionButton fab;
     private FactionListAdapter factionListAdapter;
@@ -82,6 +87,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private List<Integer> rarityIds = new ArrayList<>();
     private String searchQuery="";
     private Boolean filtersVisible=false;
+    private Boolean filtersAvailable=false;
 
     private CollectionAdapter collectionViewAdapter;
     private RecyclerView collectionRecyclerView;
@@ -89,6 +95,9 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private final Comparator<CardModel> ALPHABETICAL_COMPARATOR = new Comparator<CardModel>() {
         @Override
         public int compare(CardModel a, CardModel b) {
+            if (a.getName() == null) {
+                return 0;
+            }
             return a.getName().get(LANGUAGE)
                     .compareToIgnoreCase(b.getName().get(LANGUAGE));
         }
@@ -132,8 +141,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private List<CardModel> cardModelList;
     private final SortedList<CardModel> mSortedList = new SortedList<>(CardModel.class, mCallback);
 
-    public CollectionFragment() {
-    }
+    public CollectionFragment() { }
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -183,7 +191,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         }
 
         if (cardModelList.isEmpty()) {
-            mShimmerViewContainer.startShimmerAnimation();
             executeAsyncTasks();
         }
     }
@@ -191,7 +198,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     @Override
     public void onPause() {
         super.onPause();
-        mShimmerViewContainer.stopShimmerAnimation();
 
         getCardListTask.cancel(true);
 //        getCardDetailTask.cancel(true);
@@ -201,9 +207,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     public void setupCollectionView(View view) {
-        mShimmerViewContainer = view.findViewById(R.id.shimmer_view_collection_list);
-        mShimmerViewContainer.startShimmerAnimation();
-
         collectionRecyclerView = view.findViewById(R.id.collection_list);
         collectionViewAdapter = new CollectionAdapter(new ArrayList<CardModel>());
         collectionRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -233,23 +236,16 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+
+        List<CardModel> stubCardList = new ArrayList<CardModel>() {{
+            for (int i=0; i<9; i++) {
+                add(new CardModel(i+1));
+            }
+        }};
+        collectionViewAdapter.updateCardModelList(stubCardList);
     }
 
     public void executeAsyncTasks() {
-        GetCardListCallback getCardListInterface = new GetCardListCallback() {
-            @Override
-            public void updateAdapter(CardModel result) {
-                collectionViewAdapter.updateCardModel(result);
-            }
-
-            @Override
-            public void updateAdapter(List result) {
-                collectionViewAdapter.updateCardModelList(result);
-            }
-        };
-        getCardListTask = new GetCardListTask(getCardListInterface);
-        getCardListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
-
         GetDBListCallback getDBListCallback = new GetDBListCallback() {
             @Override
             public void updateAdapter(List result) {
@@ -257,7 +253,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBFactionListTask = new GetDBFactionListTask(getDBListCallback);
-        getDBFactionListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
+        getDBFactionListTask.executeOnExecutor(CardDatabase.DB_THREAD, getActivity());
 
         getDBListCallback = new GetDBListCallback() {
             @Override
@@ -266,7 +262,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBCategoryListTask = new GetDBCategoryListTask(getDBListCallback);
-        getDBCategoryListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
+        getDBCategoryListTask.executeOnExecutor(CardDatabase.DB_THREAD, getActivity());
 
         getDBListCallback = new GetDBListCallback() {
             @Override
@@ -281,7 +277,22 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         };
         getDBRarityListTask = new GetDBRarityListTask(getDBListCallback);
-        getDBRarityListTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getActivity());
+        getDBRarityListTask.executeOnExecutor(CardDatabase.DB_THREAD, getActivity());
+
+        GetCardListCallback getCardListInterface = new GetCardListCallback() {
+            @Override
+            public void updateAdapter(CardModel result) {
+                collectionViewAdapter.updateCardModel(result);
+            }
+
+            @Override
+            public void updateAdapter(List result) {
+                filtersAvailable=true;
+                collectionViewAdapter.updateCardModelList(result);
+            }
+        };
+        getCardListTask = new GetCardListTask(getCardListInterface);
+        getCardListTask.executeOnExecutor(CardDatabase.DB_THREAD, getActivity());
     }
 
     private void setupFiltersView() {
@@ -406,8 +417,13 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     private void filter() {
-        collectionViewAdapter.replaceAll(filter(filter(cardModelList, factionIds, categoryIds, rarityIds), searchQuery));
-        collectionRecyclerView.scrollToPosition(0);
+        if (filtersAvailable) {
+            collectionViewAdapter.replaceAll(filter(filter(cardModelList, factionIds, categoryIds, rarityIds), searchQuery));
+            collectionRecyclerView.scrollToPosition(0);
+        }
+        else {
+            collectionViewAdapter.replaceAll(cardModelList);
+        }
     }
 
     private static List<CardModel> filter(List<CardModel> models, String query) {
@@ -482,6 +498,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         public CollectionAdapter(List<CardModel> cardModels) {
             setHasStableIds(true);
             cardModelList = cardModels;
+            mSortedList.addAll(cardModels);
         }
 
         @Override
@@ -494,19 +511,45 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         public void onBindViewHolder(final CollectionViewHolder holder, final int position) {
             final CardModel cardModel = mSortedList.get(position);
 
-            if (cardModel.getVariationModelList() != null &&
-                    !cardModel.getVariationModelList().isEmpty() &&
-                    cardModel.getVariationModelList().get(0).getArt_low() != null) {
-                GlideApp.with(holder.itemView)
-                        .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
-                        .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
-                        .into(holder.cardArt);
+            holder.shimmerArt.startShimmerAnimation();
+
+            if (cardModel.getName() != null) {
+                holder.shimmerName.stopShimmerAnimation();
+                holder.shimmerName.setVisibility(View.GONE);
+
+                if (cardModel.getVariationModelList() != null &&
+                        !cardModel.getVariationModelList().isEmpty() &&
+                        cardModel.getVariationModelList().get(0).getArt_low() != null) {
+
+                    GlideApp.with(holder.itemView)
+                            .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
+                            .listener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                    holder.shimmerArt.stopShimmerAnimation();
+                                    holder.shimmerArt.setVisibility(View.GONE);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                    holder.shimmerArt.stopShimmerAnimation();
+                                    holder.shimmerArt.setVisibility(View.GONE);
+                                    return false;
+                                }
+                            })
+                            .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
+                            .into(holder.cardArt);
+                }
+
+                holder.cardName.setText(cardModel.getName().get(LANGUAGE));
+                holder.cardName.setSelected(true);
+
+                holder.itemView.setTag(cardModel);
             }
-
-            holder.cardName.setText(cardModel.getName().get(LANGUAGE));
-            holder.cardName.setSelected(true);
-
-            holder.itemView.setTag(cardModel);
+            else {
+                holder.shimmerName.startShimmerAnimation();
+            }
         }
 
         @Override
@@ -521,9 +564,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
         public void updateCardModelList(List<CardModel> cardModels) {
             cardModelList = cardModels;
-            mSortedList.addAll(cardModels);
-            mShimmerViewContainer.stopShimmerAnimation();
-            mShimmerViewContainer.setVisibility(View.GONE);
+            filter();
         }
 
         public void updateCardModel(CardModel cardModel) {
@@ -552,6 +593,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         private int cardId;
         private ImageView cardArt;
         private TextView cardName;
+        private ShimmerLayout shimmerArt;
+        private ShimmerLayout shimmerName;
 
         CollectionViewHolder(View view) {
             super(view);
@@ -559,13 +602,15 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
             cardArt = view.findViewById(R.id.collection_card_art);
             cardName = view.findViewById(R.id.collection_card_name);
+            shimmerArt = view.findViewById(R.id.collection_card_art_shimmer);
+            shimmerName = view.findViewById(R.id.collection_card_name_shimmer);
         }
 
         @Override
         public void onClick(View view) {
             cardId = mSortedList.get(getAdapterPosition()).id;
 
-            if (mSortedList.get(getAdapterPosition()).getFactionModel() != null) {
+            if (mSortedList.get(getAdapterPosition()).getTag() != null) {
                 Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
                 startActivity(intent,
                         ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());

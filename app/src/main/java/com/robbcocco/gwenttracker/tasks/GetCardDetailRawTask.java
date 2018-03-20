@@ -13,11 +13,11 @@ import java.util.List;
  * Created by rober on 3/14/2018.
  */
 
-public class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
+public class GetCardDetailRawTask extends AsyncTask<Context, Void, CardModel> {
     private GetCardDetailCallback getCardDetailCallback;
     private final int cardId;
 
-    public GetCardDetailTask(GetCardDetailCallback getCardDetailCallback, int cardId) {
+    public GetCardDetailRawTask(GetCardDetailCallback getCardDetailCallback, int cardId) {
         this.getCardDetailCallback = getCardDetailCallback;
         this.cardId = cardId;
     }
@@ -31,15 +31,10 @@ public class GetCardDetailTask extends AsyncTask<Context, Void, CardModel> {
 
         for (VariationModel variationModel : variationModelList) {
             variationModel.setRarityModel(mDb.cardDao().findRarityByVarId(variationModel.getRarity_id()));
-            variationModel.setSetModel(mDb.cardDao().findSetByVarId(variationModel.getSet_id()));
         }
         cardModel.setVariationModelList(variationModelList);
 
-        cardModel.setFactionModel(mDb.cardDao().findFactionById(cardModel.getFaction_id()));
         cardModel.setCategoryModelList(mDb.cardDao().getCategoriesByCardId(cardModel.id));
-        cardModel.setKeywordModelList(mDb.cardDao().getKeywordsByCardId(cardModel.id));
-        cardModel.setLoyaltyModelList(mDb.cardDao().getLoyaltiesByCardId(cardModel.id));
-        cardModel.setRelatedCardModelList(mDb.cardDao().getRelatedCards(cardModel.id));
 
         return cardModel;
     }

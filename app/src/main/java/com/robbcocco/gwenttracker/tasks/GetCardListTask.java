@@ -28,19 +28,30 @@ public class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
     protected List<CardModel> doInBackground(Context... context) {
         CardDatabase mDb = CardDatabase.getDatabase(context[0]);
         List<CardModel> cardModelStubList = mDb.cardDao().loadAllCards();
-
-        final List<CardModel> cardModelList = new ArrayList<>();
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
+//        for (CardModel card : cardModelStubList) {
+//            if (isCancelled()) {
+//                break;
+//            }
+//            new GetCardBaseDetailTask(getCardListInterface, card.id)
+//                    .executeOnExecutor(executor, context[0]);
+//        }
+//        return cardModelStubList;
+
+        final List<CardModel> cardModelList = new ArrayList<>();
         for (CardModel card : cardModelStubList) {
-            if (isCancelled()) { break; }
+            if (isCancelled()) {
+//                executor.shutdownNow();
+                break;
+            }
             GetCardDetailCallback getCardDetailCallback = new GetCardDetailCallback() {
                 @Override
                 public void updateAdapter(CardModel result) {
                     cardModelList.add(result);
                 }
             };
-            new GetCardDetailTask(getCardDetailCallback, card.id)
+            new GetCardDetailRawTask(getCardDetailCallback, card.id)
                     .executeOnExecutor(executor, context[0]);
         }
         executor.shutdown();
@@ -49,7 +60,6 @@ public class GetCardListTask extends AsyncTask<Context, Void, List<CardModel>> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         return cardModelList;
     }
 

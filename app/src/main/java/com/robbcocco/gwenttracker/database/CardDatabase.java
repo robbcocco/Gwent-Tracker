@@ -1,13 +1,16 @@
 package com.robbcocco.gwenttracker.database;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
+import com.robbcocco.gwenttracker.CollectionFragment;
+import com.robbcocco.gwenttracker.MainActivity;
 import com.robbcocco.gwenttracker.database.converter.DictConverter;
 import com.robbcocco.gwenttracker.database.converter.URLConverter;
 import com.robbcocco.gwenttracker.database.dao.CardCategoryDao;
@@ -35,6 +38,9 @@ import com.robbcocco.gwenttracker.database.entity.RelatedCardModel;
 import com.robbcocco.gwenttracker.database.entity.SetModel;
 import com.robbcocco.gwenttracker.database.entity.VariationModel;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created by rober on 2/23/2018.
  */
@@ -47,6 +53,7 @@ import com.robbcocco.gwenttracker.database.entity.VariationModel;
 @TypeConverters({DictConverter.class, URLConverter.class})
 public abstract class CardDatabase extends RoomDatabase {
 
+    public static final ExecutorService DB_THREAD = Executors.newSingleThreadExecutor();
     private static final String DB_NAME="collection.db";
     private static volatile CardDatabase INSTANCE=null;
 
@@ -72,12 +79,22 @@ public abstract class CardDatabase extends RoomDatabase {
     }
 
     @NonNull
-    private static CardDatabase create(Context context) {
-        CardDatabase mDb = Room.databaseBuilder(context, CardDatabase.class, DB_NAME)
+    private static CardDatabase create(final Context context) {
+        return Room.databaseBuilder(context, CardDatabase.class, DB_NAME)
+                .addCallback(new Callback() {
+                    @Override
+                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                        super.onCreate(db);
+                        DB_THREAD.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                CardGenerator.GenerateCollection(getDatabase(context), context);
+                            }
+                        });
+                    }
+                })
                 .addMigrations()
                 .fallbackToDestructiveMigration()
                 .build();
-
-        return mDb;
     }
 }

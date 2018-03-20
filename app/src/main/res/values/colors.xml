@@ -7,4 +7,7 @@
     <color name="colorDefaultText">#88FFFFFF</color>
 
     <color name="colorBackground">#212121</color>
+
+    <color name="cardShimmer">#795548</color>
+    <color name="cardShimmerBG">#6d4c41</color>
 </resources>

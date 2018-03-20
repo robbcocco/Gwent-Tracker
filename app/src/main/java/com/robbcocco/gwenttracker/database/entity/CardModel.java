@@ -50,6 +50,10 @@ public class CardModel {
     private List<LoyaltyModel> loyaltyModelList;
     @Ignore
     private List<CardModel> relatedCardModelList;
+    @Ignore
+    public CardModel(int id) {
+        this.id = id;
+    }
 
     public CardModel(String tag, Map<String, String> name, Map<String, String> flavor,
                      Map<String, String> info, Map<String, String> info_raw, int strength,

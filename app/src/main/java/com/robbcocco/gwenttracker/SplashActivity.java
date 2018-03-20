@@ -5,28 +5,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 
-import com.robbcocco.gwenttracker.tasks.GetDatabaseTask;
-import com.robbcocco.gwenttracker.tasks.GetDatabaseCallback;
+import com.robbcocco.gwenttracker.database.CardDatabase;
 
 public class SplashActivity extends AppCompatActivity {
-    private GetDatabaseTask getDatabaseTask;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         super.onCreate(savedInstanceState);
 
-        GetDatabaseCallback getDatabaseCallback = new GetDatabaseCallback() {
+        // Cheap way to populate the db before querying for the cards on first run
+        CardDatabase.DB_THREAD.execute(new Runnable() {
             @Override
-            public void startActivity() {
-                startMainActivity();
+            public void run() {
+                CardDatabase.getDatabase(getApplicationContext()).cardDao().testDB();
             }
-        };
-        getDatabaseTask = new GetDatabaseTask(getDatabaseCallback);
-        getDatabaseTask.execute(getApplicationContext());
-    }
+        });
 
-    private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

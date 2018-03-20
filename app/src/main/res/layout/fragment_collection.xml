@@ -6,57 +6,10 @@
     android:layout_height="match_parent"
     tools:context="com.robbcocco.gwenttracker.MainActivity$PlaceholderFragment">
 
-    <io.supercharge.shimmerlayout.ShimmerLayout
-        android:id="@+id/shimmer_view_collection_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:alpha="0.5"
-        app:shimmer_animation_duration="2000"
-        app:shimmer_color="#795548"
-        app:shimmer_mask_width="1"
-        app:shimmer_gradient_center_color_width="0.1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <include layout="@layout/collection_card_placeholder" />
-                <include layout="@layout/collection_card_placeholder" />
-                <include layout="@layout/collection_card_placeholder" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <include layout="@layout/collection_card_placeholder" />
-                <include layout="@layout/collection_card_placeholder" />
-                <include layout="@layout/collection_card_placeholder" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <include layout="@layout/collection_card_placeholder" />
-                <include layout="@layout/collection_card_placeholder" />
-                <include layout="@layout/collection_card_placeholder" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </io.supercharge.shimmerlayout.ShimmerLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/collection_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical">
-
-    </android.support.v7.widget.RecyclerView>
+        android:scrollbars="vertical"/>
 
 </android.support.constraint.ConstraintLayout>
