@@ -5,10 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -29,10 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.robbcocco.gwenttracker.database.CardDatabase;
 import com.robbcocco.gwenttracker.database.entity.CardModel;
 import com.robbcocco.gwenttracker.database.entity.CategoryModel;
@@ -190,7 +184,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             rarityListAdapter.notifyDataSetChanged();
         }
 
-        if (cardModelList.isEmpty()) {
+        if (!filtersAvailable) {
             executeAsyncTasks();
         }
     }
@@ -236,16 +230,16 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+    }
 
+    public void executeAsyncTasks() {
         List<CardModel> stubCardList = new ArrayList<CardModel>() {{
             for (int i=0; i<9; i++) {
                 add(new CardModel(i+1));
             }
         }};
-        collectionViewAdapter.updateCardModelList(stubCardList);
-    }
 
-    public void executeAsyncTasks() {
+        collectionViewAdapter.updateCardModelList(stubCardList);
         GetDBListCallback getDBListCallback = new GetDBListCallback() {
             @Override
             public void updateAdapter(List result) {
