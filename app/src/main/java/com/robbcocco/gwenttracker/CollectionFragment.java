@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -64,6 +65,9 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private GetDBCategoryListTask getDBCategoryListTask;
     private GetDBRarityListTask getDBRarityListTask;
 
+    private CollectionAdapter collectionViewAdapter;
+    private RecyclerView collectionRecyclerView;
+
     private View rootView;
     private LinearLayout filters;
     private FloatingActionButton fab;
@@ -80,22 +84,10 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     private List<RarityModel> rarityModelList;
     private List<Integer> rarityIds = new ArrayList<>();
     private String searchQuery="";
-    private Boolean filtersVisible=false;
     private Boolean filtersAvailable=false;
+    private Boolean filtersVisible=false;
 
-    private CollectionAdapter collectionViewAdapter;
-    private RecyclerView collectionRecyclerView;
-
-    private final Comparator<CardModel> ALPHABETICAL_COMPARATOR = new Comparator<CardModel>() {
-        @Override
-        public int compare(CardModel a, CardModel b) {
-            if (a.getName() == null) {
-                return 0;
-            }
-            return a.getName().get(LANGUAGE)
-                    .compareToIgnoreCase(b.getName().get(LANGUAGE));
-        }
-    };
+    private Boolean sortByRarity=true;
     private final SortedList.Callback<CardModel> mCallback = new SortedList.Callback<CardModel>() {
         @Override
         public void onInserted(int position, int count) {
@@ -119,7 +111,10 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
         @Override
         public int compare(CardModel a, CardModel b) {
-            return ALPHABETICAL_COMPARATOR.compare(a, b);
+            if (sortByRarity) {
+                return CardModel.compareByRarity(a, b, LANGUAGE);
+            }
+            return CardModel.compareByName(a, b, LANGUAGE);
         }
 
         @Override
@@ -132,8 +127,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             return item1.id == item2.id;
         }
     };
-    private List<CardModel> cardModelList;
     private final SortedList<CardModel> mSortedList = new SortedList<>(CardModel.class, mCallback);
+    private List<CardModel> cardModelList;
 
     public CollectionFragment() { }
 
@@ -149,7 +144,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         LANGUAGE = sharedPreferences.getString("lang_list", "en-US");
 
@@ -389,13 +383,54 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
         super.onCreateOptionsMenu(menu, inflater);
 
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (menu != null) {
+                    menu.findItem(R.id.action_sort).setVisible(false);
+                    menu.findItem(R.id.action_settings).setVisible(false);
+                }
+            }
+        });
+        // Doesn't actually work...
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                if (menu != null) {
+                    menu.findItem(R.id.action_sort).setVisible(true);
+                    menu.findItem(R.id.action_settings).setVisible(true);
+                }
+                return false;
+            }
+        });
+
+        final MenuItem filterByName = menu.findItem(R.id.action_sort_by_name);
+        filterByName.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sortByRarity = false;
+                collectionViewAdapter.replaceAll(cardModelList);
+                collectionRecyclerView.scrollToPosition(0);
+                return false;
+            }
+        });
+        final MenuItem filterByRarity = menu.findItem(R.id.action_sort_by_rarity);
+        filterByRarity.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sortByRarity = true;
+                collectionViewAdapter.replaceAll(cardModelList);
+                collectionRecyclerView.scrollToPosition(0);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -506,7 +541,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             final CardModel cardModel = mSortedList.get(position);
 
             if (cardModel.getName() != null) {
-                holder.shimmerName.setVisibility(View.GONE);
                 holder.shimmerArt.setVisibility(View.GONE);
 
                 if (cardModel.getVariationModelList() != null &&
@@ -526,7 +560,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
             else {
                 holder.shimmerArt.startShimmerAnimation();
-                holder.shimmerName.startShimmerAnimation();
             }
         }
 
@@ -572,7 +605,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         private ImageView cardArt;
         private TextView cardName;
         private ShimmerLayout shimmerArt;
-        private ShimmerLayout shimmerName;
 
         CollectionViewHolder(View view) {
             super(view);
@@ -581,7 +613,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             cardArt = view.findViewById(R.id.collection_card_art);
             cardName = view.findViewById(R.id.collection_card_name);
             shimmerArt = view.findViewById(R.id.collection_card_art_shimmer);
-            shimmerName = view.findViewById(R.id.collection_card_name_shimmer);
         }
 
         @Override

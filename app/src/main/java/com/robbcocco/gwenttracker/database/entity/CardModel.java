@@ -8,6 +8,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -114,6 +115,31 @@ public class CardModel {
         result = 31 * result + (loyaltyModelList != null ? loyaltyModelList.hashCode() : 0);
         result = 31 * result + (relatedCardModelList != null ? relatedCardModelList.hashCode() : 0);
         return result;
+    }
+
+    public static int compareByName(CardModel a, CardModel b, String language) {
+        if (a.getName() == null && b.getName() == null) {
+            return 0;
+        }
+        return a.getName().get(language)
+                .compareToIgnoreCase(b.getName().get(language));
+    }
+
+    public static int compareByRarity(CardModel a, CardModel b, String language) {
+        if (a.getVariationModelList() != null && !a.getVariationModelList().isEmpty() &&
+                b.getVariationModelList() != null && !b.getVariationModelList().isEmpty()) {
+            if (a.getVariationModelList().get(0).getRarityModel().getStandard() ==
+                    b.getVariationModelList().get(0).getRarityModel().getStandard()) {
+                if (a.getStrength() == b.getStrength()) {
+                    return a.getName().get(language)
+                            .compareToIgnoreCase(b.getName().get(language));
+                }
+                return a.getStrength() - b.getStrength();
+            }
+            return b.getVariationModelList().get(0).getRarityModel().getStandard() -
+                    a.getVariationModelList().get(0).getRarityModel().getStandard();
+        }
+        return 0;
     }
 
     public String getTag() {

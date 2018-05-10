@@ -3,14 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.robbcocco.gwenttracker.MainActivity">
 
-    <item android:id="@+id/action_search"
+    <item
+        android:id="@+id/action_search"
         android:title="@string/action_search"
         android:icon="@drawable/ic_search_24dp"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        android:icon="@drawable/ic_sort_24dp"
+        android:orderInCategory="2"
+        android:enabled="true"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_sort_by_name"
+                android:title="@string/action_sort_by_name"/>
+            <item
+                android:id="@+id/action_sort_by_rarity"
+                android:title="@string/action_sort_by_rarity"/>
+        </menu>
+    </item>
+    <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
         android:title="@string/action_settings"
+        android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>
