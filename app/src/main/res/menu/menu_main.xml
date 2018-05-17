@@ -15,14 +15,14 @@
         android:icon="@drawable/ic_sort_24dp"
         android:orderInCategory="2"
         android:enabled="true"
-        app:showAsAction="ifRoom">
+        app:showAsAction="always">
         <menu>
-            <item
-                android:id="@+id/action_sort_by_name"
-                android:title="@string/action_sort_by_name"/>
             <item
                 android:id="@+id/action_sort_by_rarity"
                 android:title="@string/action_sort_by_rarity"/>
+            <item
+                android:id="@+id/action_sort_by_name"
+                android:title="@string/action_sort_by_name"/>
         </menu>
     </item>
     <item

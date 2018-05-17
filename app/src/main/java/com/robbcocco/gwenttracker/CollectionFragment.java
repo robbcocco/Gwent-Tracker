@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.util.SortedList;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -399,7 +400,6 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                 }
             }
         });
-        // Doesn't actually work...
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
@@ -411,26 +411,33 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
             }
         });
 
-        final MenuItem filterByName = menu.findItem(R.id.action_sort_by_name);
-        filterByName.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                sortByRarity = false;
-                collectionViewAdapter.replaceAll(cardModelList);
-                collectionRecyclerView.scrollToPosition(0);
-                return false;
-            }
-        });
         final MenuItem filterByRarity = menu.findItem(R.id.action_sort_by_rarity);
+        final MenuItem filterByName = menu.findItem(R.id.action_sort_by_name);
         filterByRarity.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 sortByRarity = true;
-                collectionViewAdapter.replaceAll(cardModelList);
-                collectionRecyclerView.scrollToPosition(0);
+                updateSorting(filterByRarity, filterByName);
                 return false;
             }
         });
+        filterByName.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                sortByRarity = false;
+                updateSorting(filterByRarity, filterByName);
+                return false;
+            }
+        });
+        filterByRarity.setEnabled(!sortByRarity);
+        filterByName.setEnabled(sortByRarity);
+    }
+
+    public void updateSorting(MenuItem filterByRarity, MenuItem filterByName) {
+        filterByRarity.setEnabled(!sortByRarity);
+        filterByName.setEnabled(sortByRarity);
+        collectionViewAdapter.replaceAll(cardModelList);
+        collectionRecyclerView.scrollToPosition(0);
     }
 
     @Override
@@ -547,6 +554,8 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
                         !cardModel.getVariationModelList().isEmpty() &&
                         cardModel.getVariationModelList().get(0).getArt_low() != null) {
 
+                    holder.cardRarity.setCardBackgroundColor(getResources().getColor(cardModel.getRarityColor()));
+
                     GlideApp.with(holder.itemView)
                             .load(cardModel.getVariationModelList().get(0).getArt_low().toString())
                             .override(SIZE_ORIGINAL, SIZE_ORIGINAL)
@@ -604,6 +613,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
         private int cardId;
         private ImageView cardArt;
         private TextView cardName;
+        private CardView cardRarity;
         private ShimmerLayout shimmerArt;
 
         CollectionViewHolder(View view) {
@@ -612,6 +622,7 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
             cardArt = view.findViewById(R.id.collection_card_art);
             cardName = view.findViewById(R.id.collection_card_name);
+            cardRarity = view.findViewById(R.id.collection_card_rarity);
             shimmerArt = view.findViewById(R.id.collection_card_art_shimmer);
         }
 
@@ -621,8 +632,9 @@ public class CollectionFragment extends Fragment implements SearchView.OnQueryTe
 
             if (mSortedList.get(getAdapterPosition()).getName() != null) {
                 Intent intent = CardDetailActivity.newIntent(getActivity(), cardId);
-                startActivity(intent,
-                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+//                startActivity(intent,
+//                        ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+                startActivity(intent);
             }
         }
     }

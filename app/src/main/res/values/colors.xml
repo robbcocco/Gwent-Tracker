@@ -10,4 +10,18 @@
 
     <color name="cardShimmer">#795548</color>
     <color name="cardShimmerBG">#6d4c41</color>
+
+    <!-- Rarity colors -->
+    <color name="common">#e0e0e0</color>
+    <color name="rare">#4fc3f7</color>
+    <color name="epic">#ba68c8</color>
+    <color name="legendary">#ffd54f</color>
+
+    <!-- Faction colors -->
+    <color name="neutral">#00bfa5</color>
+    <color name="monsters">#8e0000</color>
+    <color name="nilfgaard">#1b1b1b</color>
+    <color name="northernrealms">#004c8c</color>
+    <color name="scoiatael">#005005</color>
+    <color name="skellige">#38006b</color>
 </resources>

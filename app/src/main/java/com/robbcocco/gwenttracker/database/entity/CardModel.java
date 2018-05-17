@@ -6,7 +6,10 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
+
+import com.robbcocco.gwenttracker.R;
 
 import java.util.Comparator;
 import java.util.List;
@@ -117,6 +120,7 @@ public class CardModel {
         return result;
     }
 
+
     public static int compareByName(CardModel a, CardModel b, String language) {
         if (a.getName() == null && b.getName() == null) {
             return 0;
@@ -141,6 +145,7 @@ public class CardModel {
         }
         return 0;
     }
+
 
     public String getTag() {
         return tag;
@@ -206,23 +211,96 @@ public class CardModel {
         this.factionModel = factionModel;
     }
 
-    public List<VariationModel> getVariationModelList() {
-        return variationModelList;
+    public int getFactionBanner() {
+        int factionArtId;
+        switch (this.getFactionModel().getTag()) {
+            case "Monster":
+                factionArtId = R.drawable.faction_monsters;
+                break;
+            case "Nilfgaard":
+                factionArtId = R.drawable.faction_nilfgaard;
+                break;
+            case "Northern Realms":
+                factionArtId = R.drawable.faction_northernrealms;
+                break;
+            case "Scoiatael":
+                factionArtId = R.drawable.faction_scoiatael;
+                break;
+            case "Skellige":
+                factionArtId = R.drawable.faction_skellige;
+                break;
+            case "Neutral":
+            default:
+                factionArtId = R.drawable.faction_neutral;
+                break;
+        }
+        return factionArtId;
+    }
+
+    public int getFactionColor() {
+        int id;
+        switch (this.getFactionModel().getTag()) {
+            case "Monster":
+                id = R.color.monsters;
+                break;
+            case "Nilfgaard":
+                id = R.color.nilfgaard;
+                break;
+            case "Northern Realms":
+                id = R.color.northernrealms;
+                break;
+            case "Scoiatael":
+                id = R.color.scoiatael;
+                break;
+            case "Skellige":
+                id = R.color.skellige;
+                break;
+            case "Neutral":
+            default:
+                id = R.color.neutral;
+                break;
+        }
+        return id;
     }
 
     public String getRarity(String lang) {
         if (this.getVariationModelList() != null) {
             String values;
-            values = "Craft";
-            values = values + "\nStandard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getStandard());
-            values = values + "\nPremium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getPremium());
-            values = values + "\nUpgrade: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getUpgrade());
-            values = values + "\nMill";
-            values = values + "\nStandard: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_standard());
-            values = values + "\nPremium: " + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_premium());
+            values = "\t\t" + "Craft" + "\t\t" + "Mill";
+            values += "\nStandard:\t\t" + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getStandard())
+                    + "\t\t" + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_standard());
+            values += "\nUpgrade:\t" + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getUpgrade());
+            values += "\nPremium:\t" + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getPremium())
+                    + "\t\t" + String.valueOf(this.getVariationModelList().get(0).getRarityModel().getMill_premium());
             return values;
         }
         return "";
+    }
+
+    public int getRarityColor() {
+        int id = R.color.common;
+        if (!this.getVariationModelList().isEmpty()) {
+            switch (this.getVariationModelList().get(0).getRarityModel().getName()) {
+                case "Legendary":
+                    id = R.color.legendary;
+                    break;
+                case "Epic":
+                    id = R.color.epic;
+                    break;
+                case "Rare":
+                    id = R.color.rare;
+                    break;
+                case "Common":
+                default:
+                    id = R.color.common;
+                    break;
+            }
+        }
+        return id;
+    }
+
+    public List<VariationModel> getVariationModelList() {
+        return variationModelList;
     }
 
     public void setVariationModelList(List<VariationModel> variationModelList) {

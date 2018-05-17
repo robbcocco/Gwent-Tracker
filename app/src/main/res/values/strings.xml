@@ -1,14 +1,20 @@
 <resources>
+    <!-- splash activity -->
+    <string name="generating_collection">Generating collection</string>
+
+    <!-- main activity -->
     <string name="app_name">Gwent Tracker</string>
     <string name="tab_text_1">Collection</string>
     <string name="tab_text_2">Tab 2</string>
     <string name="tab_text_3">Tab 3</string>
+    <!-- action bar & filters -->
     <string name="filters_reset">Reset filters</string>
     <string name="action_search">Search</string>
     <string name="action_sort">Sort</string>
-    <string name="action_sort_by_name">Sort by name</string>
-    <string name="action_sort_by_rarity">Sort by rarity</string>
+    <string name="action_sort_by_name">Name</string>
+    <string name="action_sort_by_rarity">Rarity</string>
     <string name="action_settings">Settings</string>
+
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!-- card -->
@@ -19,9 +25,9 @@
     <string name="card_flavor">Flavor</string>
     <string name="card_info">Info</string>
     <string name="card_related">Related</string>
-    <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
+    <string name="title_activity_settings">Settings</string>
 
     <!-- General settings -->
     <string name="pref_header_general">General</string>

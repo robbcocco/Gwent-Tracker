@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -48,8 +49,9 @@ public class CardDetailFragment extends Fragment {
     private GetCardDetailTask getCardDetailTask;
 
     private CardModel cardModel;
-    private CollapsingToolbarLayout collapsingToolbar;
-    private Toolbar toolbar;
+//    private CollapsingToolbarLayout collapsingToolbar;
+//    private Toolbar toolbar;
+    private TextView titleView;
     private ImageView factionArtView;
     private ImageView artView;
     private TextView strView;
@@ -61,6 +63,14 @@ public class CardDetailFragment extends Fragment {
     private TextView categoriesView;
     private LinearLayout infoViewParent;
     private TextView infoView;
+
+    //TODO: should probably switch to databinding
+    private CardView fac1;
+    private CardView fac2;
+    private CardView fac3;
+    private CardView fac4;
+    private CardView fac5;
+    private CardView fac6;
 
     private LinearLayout relatedTitleView;
     private RelatedAdapter recyclerViewAdapter;
@@ -115,9 +125,10 @@ public class CardDetailFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_card_detail, container, false);
 
-        toolbar = view.findViewById(R.id.card_detail_toolbar);
-        collapsingToolbar = view.findViewById(R.id.card_detail_collapsingtoolbar);
+//        toolbar = view.findViewById(R.id.card_detail_toolbar);
+//        collapsingToolbar = view.findViewById(R.id.card_detail_collapsingtoolbar);
 
+        titleView = view.findViewById(R.id.card_detail_title);
         factionArtView = view.findViewById(R.id.card_detail_faction_art);
         artView = view.findViewById(R.id.card_detail_art);
         factionView = view.findViewById(R.id.card_detail_faction);
@@ -130,15 +141,23 @@ public class CardDetailFragment extends Fragment {
         infoViewParent = view.findViewById(R.id.card_detail_info_parent);
         infoView = view.findViewById(R.id.card_detail_info);
 
+        //TODO: should probably switch to databinding
+        fac1 = view.findViewById(R.id.card_detail_faction1);
+        fac2 = view.findViewById(R.id.card_detail_faction2);
+        fac3 = view.findViewById(R.id.card_detail_faction3);
+        fac4 = view.findViewById(R.id.card_detail_faction4);
+        fac5 = view.findViewById(R.id.card_detail_faction5);
+        fac6 = view.findViewById(R.id.card_detail_faction6);
+
         relatedTitleView = view.findViewById(R.id.card_detail_related_parent);
         recyclerView = view.findViewById(R.id.card_detail_related_list);
         recyclerViewAdapter = new RelatedAdapter(new ArrayList<CardModel>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        if (toolbar != null) {
-            ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        }
+//        if (toolbar != null) {
+//            ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+//        }
 
         updateView();
 
@@ -147,7 +166,8 @@ public class CardDetailFragment extends Fragment {
 
     private void updateView() {
         if (cardModel != null) {
-            collapsingToolbar.setTitle(cardModel.getName().get(LANGUAGE));
+//            collapsingToolbar.setTitle(cardModel.getName().get(LANGUAGE));
+            titleView.setText(cardModel.getName().get(LANGUAGE));
 
             if (cardModel.getVariationModelList() != null &&
                     !cardModel.getVariationModelList().isEmpty() &&
@@ -162,29 +182,15 @@ public class CardDetailFragment extends Fragment {
 
             if (cardModel.getFactionModel() != null) {
                 factionView.setText(cardModel.getFactionModel().getName().get(LANGUAGE));
-                int factionArtId;
-                switch (cardModel.getFactionModel().getTag()) {
-                    case "Monster":
-                        factionArtId = R.drawable.faction_monsters;
-                        break;
-                    case "Nilfgaard":
-                        factionArtId = R.drawable.faction_nilfgaard;
-                        break;
-                    case "Northern Realms":
-                        factionArtId = R.drawable.faction_northernrealms;
-                        break;
-                    case "Scoiatael":
-                        factionArtId = R.drawable.faction_scoiatael;
-                        break;
-                    case "Skellige":
-                        factionArtId = R.drawable.faction_skellige;
-                        break;
-                    case "Neutral":
-                    default:
-                        factionArtId = R.drawable.faction_neutral;
-                        break;
-                }
-                factionArtView.setImageResource(factionArtId);
+                factionArtView.setImageResource(cardModel.getFactionBanner());
+
+                //TODO: should probably switch to databinding
+                fac1.setCardBackgroundColor(getResources().getColor(cardModel.getFactionColor()));
+                fac2.setCardBackgroundColor(getResources().getColor(cardModel.getFactionColor()));
+                fac3.setCardBackgroundColor(getResources().getColor(cardModel.getFactionColor()));
+                fac4.setCardBackgroundColor(getResources().getColor(cardModel.getFactionColor()));
+                fac5.setCardBackgroundColor(getResources().getColor(cardModel.getFactionColor()));
+                fac6.setCardBackgroundColor(getResources().getColor(cardModel.getFactionColor()));
             }
 
             if (cardModel.getVariationModelList().get(0).getRarityModel() != null) {

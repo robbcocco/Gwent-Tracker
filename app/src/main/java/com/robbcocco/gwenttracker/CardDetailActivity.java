@@ -13,7 +13,10 @@ import android.transition.Slide;
 import android.view.Gravity;
 import android.view.Window;
 
-public class CardDetailActivity extends AppCompatActivity {
+import com.klinker.android.sliding.MultiShrinkScroller;
+import com.klinker.android.sliding.SlidingActivity;
+
+public class CardDetailActivity extends SlidingActivity {
 
     private static final String CARD_ID = "com.robbcocco.gwenttracker.card_id";
 
@@ -28,14 +31,32 @@ public class CardDetailActivity extends AppCompatActivity {
         return CardDetailFragment.newInstance(cardId);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_card_detail);
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_card_detail);
+//
+////        getWindow().setEnterTransition(new Explode());
+////        getWindow().setExitTransition(new Explode());
+//
+//        FragmentManager fm = getSupportFragmentManager();
+//        Fragment fragment = fm.findFragmentById(R.id.card_detail_container);
+//
+//        if (fragment == null) {
+//            fragment = createFragment();
+//            fm.beginTransaction().add(R.id.card_detail_container, fragment).commit();
+//        }
+//    }
 
-//        getWindow().setEnterTransition(new Explode());
-//        getWindow().setExitTransition(new Explode());
+    @Override
+    public void init(Bundle savedInstanceState) {
+        disableHeader();
+        setPrimaryColors(
+                getResources().getColor(R.color.colorPrimary),
+                getResources().getColor(R.color.colorPrimaryDark)
+        );
+        setContent(R.layout.activity_card_detail);
 
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.card_detail_container);
@@ -44,5 +65,11 @@ public class CardDetailActivity extends AppCompatActivity {
             fragment = createFragment();
             fm.beginTransaction().add(R.id.card_detail_container, fragment).commit();
         }
+    }
+
+    @Override
+    protected void configureScroller(MultiShrinkScroller scroller) {
+        super.configureScroller(scroller);
+        scroller.setIntermediateHeaderHeightRatio(-100);
     }
 }
